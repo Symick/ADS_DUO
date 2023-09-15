@@ -22,9 +22,7 @@ public class Train {
      * @return
      */
     public boolean hasWagons() {
-        // TODO
-
-        return false;   // replace by proper outcome
+        return firstWagon != null;
     }
 
     /**
@@ -33,7 +31,7 @@ public class Train {
      * @return
      */
     public boolean isPassengerTrain() {
-        // TODO
+
 
         return false;   // replace by proper outcome
     }
@@ -63,7 +61,7 @@ public class Train {
      * @param wagon the first wagon of a sequence of wagons to be attached (can be null)
      */
     public void setFirstWagon(Wagon wagon) {
-        // TODO
+        firstWagon = wagon;
     }
 
     /**
@@ -89,7 +87,7 @@ public class Train {
      *          (return 0 for a freight train)
      */
     public int getTotalNumberOfSeats() {
-        // TODO
+
 
         return 0;   // replace by proper outcome
     }
