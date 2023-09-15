@@ -200,15 +200,13 @@ public abstract class Wagon {
             //remove tail, this also has a side effect that the next wagon doesn't have a front anymore
             current.detachTail();
 
-            /*Reverse is the first Wagon of the reversed sequence
-             */
+            //Reverse is the first Wagon of the reversed sequence
             if (reverse == null) {
                 //add the current to the reversed sequence, which is empty at the start
                 reverse = current;
             } else {
                 //make the current the new starting Wagon of the reversed sequence
                 current.attachTail(reverse);
-                //update the reverse pointer
                 reverse = current;
             }
             current = next;
