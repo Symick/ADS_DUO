@@ -234,8 +234,6 @@ public abstract class Wagon {
         return reverse;
     }
 
-    // TODO string representation of a Wagon
-
     @Override
     public String toString() {
         return String.format("[Wagon-%d]", id);

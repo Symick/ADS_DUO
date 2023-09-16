@@ -18,8 +18,8 @@ public class Train {
     }
 
     /**
-     * Indicates whether the train has at least one connected Wagon
-     * @return
+     * Indicates whether the train has at least one connected Wagon.
+     * @return  true if the train has wagons, else false
      */
     public boolean hasWagons() {
         return firstWagon != null;
@@ -31,9 +31,7 @@ public class Train {
      * @return
      */
     public boolean isPassengerTrain() {
-
-
-        return false;   // replace by proper outcome
+        return firstWagon instanceof PassengerWagon;
     }
 
     /**
@@ -42,9 +40,7 @@ public class Train {
      * @return
      */
     public boolean isFreightTrain() {
-        // TODO
-
-        return false;   // replace by proper outcome
+        return firstWagon instanceof FreightWagon;
     }
 
     public Locomotive getEngine() {
