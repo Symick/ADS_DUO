@@ -28,7 +28,7 @@ public class Train {
     /**
      * A train is a passenger train when its first wagon is a PassengerWagon
      * (we do not worry about the posibility of mixed compositions here)
-     * @return
+     * @return  true if the train is a passenger train, else false
      */
     public boolean isPassengerTrain() {
         return firstWagon instanceof PassengerWagon;
@@ -37,7 +37,7 @@ public class Train {
     /**
      * A train is a freight train when its first wagon is a FreightWagon
      * (we do not worry about the posibility of mixed compositions here)
-     * @return
+     * @return  true if the train is a passenger train, else false.
      */
     public boolean isFreightTrain() {
         return firstWagon instanceof FreightWagon;
@@ -64,18 +64,36 @@ public class Train {
      * @return  the number of Wagons connected to the train
      */
     public int getNumberOfWagons() {
-        // TODO
+        if (!hasWagons()) {
+            return 0;
+        }
 
-        return 0;   // replace by proper outcome
+        int wagonCounter = 1;
+        Wagon currentWagon = firstWagon;
+
+        while (currentWagon.hasNextWagon()) {
+            wagonCounter++;
+            currentWagon = currentWagon.getNextWagon();
+        }
+
+        return wagonCounter;
     }
 
     /**
      * @return  the last wagon attached to the train
      */
     public Wagon getLastWagonAttached() {
-        // TODO
+        if (!hasWagons()) {
+            return null;
+        }
 
-        return null;    // replace by proper outcome
+        Wagon currentWagon = firstWagon;
+
+        while (currentWagon.hasNextWagon()) {
+            currentWagon = currentWagon.getNextWagon();
+        }
+
+        return currentWagon;
     }
 
     /**
@@ -83,9 +101,20 @@ public class Train {
      *          (return 0 for a freight train)
      */
     public int getTotalNumberOfSeats() {
+        if (isFreightTrain() || !hasWagons()) {
+            return 0;
+        }
 
+        PassengerWagon currentWagon = (PassengerWagon) firstWagon;
+        int totalSeats = currentWagon.getNumberOfSeats();
 
-        return 0;   // replace by proper outcome
+        while (currentWagon.hasNextWagon()) {
+            currentWagon = (PassengerWagon) currentWagon.getNextWagon();
+            totalSeats += currentWagon.getNumberOfSeats();
+
+        }
+
+        return totalSeats;
     }
 
     /**
@@ -95,9 +124,19 @@ public class Train {
      *
      */
     public int getTotalMaxWeight() {
-        // TODO
+        if (isPassengerTrain() || !hasWagons()) {
+            return 0;
+        }
 
-        return 0;   // replace by proper outcome
+        FreightWagon currentWagon = (FreightWagon) firstWagon;
+        int totalMaxWeight = currentWagon.getMaxWeight();
+
+        while (currentWagon.hasNextWagon()) {
+            currentWagon = (FreightWagon) currentWagon.getNextWagon();
+            totalMaxWeight += currentWagon.getMaxWeight();
+        }
+
+        return totalMaxWeight;
     }
 
      /**
@@ -107,9 +146,23 @@ public class Train {
      *          (return null if the position is not valid for this train)
      */
     public Wagon findWagonAtPosition(int position) {
-        // TODO
+        if (!hasWagons() || position < 0) {
+            return null;
+        }
 
-        return null;    // replace by proper outcome
+        int currentPosition = 0;
+        Wagon currentWagon = firstWagon;
+
+        while (currentWagon != null) {
+            if (position == currentPosition) {
+                return currentWagon;
+            }
+
+            currentWagon = currentWagon.getNextWagon();
+            currentPosition++;
+        }
+
+        return null;
     }
 
     /**
@@ -235,4 +288,8 @@ public class Train {
     }
 
     // TODO string representation of a train
+    @Override
+    public String toString() {
+        return String.format("from %s to %s", origin, destination);
+    }
 }

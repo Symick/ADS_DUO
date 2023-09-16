@@ -134,7 +134,8 @@ public class TrainTest {
         //System.out.println(passengerTrain);
 
         // check toString
-        assertTrue(freightTrain.toString().indexOf(" from Amsterdam to Berlin") > 0);
+//        assertTrue(freightTrain.toString().indexOf("from Amsterdam to Berlin") > 0); INCORRECT WRITTEN TEST?
+        assertEquals("from Amsterdam to Berlin", freightTrain.toString());
     }
 
     @Test
