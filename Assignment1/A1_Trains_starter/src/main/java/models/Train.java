@@ -111,7 +111,6 @@ public class Train {
         while (currentWagon.hasNextWagon()) {
             currentWagon = (PassengerWagon) currentWagon.getNextWagon();
             totalSeats += currentWagon.getNumberOfSeats();
-
         }
 
         return totalSeats;
@@ -121,7 +120,6 @@ public class Train {
      * calculates the total maximum weight of a freight train
      * @return  the total maximum weight of a freight train
      *          (return 0 for a passenger train)
-     *
      */
     public int getTotalMaxWeight() {
         if (isPassengerTrain() || !hasWagons()) {
@@ -141,9 +139,8 @@ public class Train {
 
      /**
      * Finds the wagon at the given position (starting at 0 for the first wagon of the train)
-     * @param position
-     * @return  the wagon found at the given position
-     *          (return null if the position is not valid for this train)
+     * @param   position  the index of the wagon in the train
+     * @return            the wagon found at the given position
      */
     public Wagon findWagonAtPosition(int position) {
         if (!hasWagons() || position < 0) {
@@ -167,14 +164,25 @@ public class Train {
 
     /**
      * Finds the wagon with a given wagonId
-     * @param wagonId
-     * @return  the wagon found
-     *          (return null if no wagon was found with the given wagonId)
+     * @param  wagonId  the id of the wagon to be found
+     * @return          the wagon found
+     *                  (return null if no wagon was found with the given wagonId)
      */
     public Wagon findWagonById(int wagonId) {
-        // TODO
+        if (!hasWagons()) {
+            return null;
+        }
 
-        return null;    // replace by proper outcome
+        Wagon currentWagon = firstWagon;
+        while (currentWagon != null) {
+            if (currentWagon.getId() == wagonId) {
+                return currentWagon;
+            }
+
+            currentWagon = currentWagon.getNextWagon();
+        }
+
+        return null;
     }
 
     /**
@@ -187,9 +195,13 @@ public class Train {
      * @return whether type and capacity of this train can accommodate attachment of the sequence
      */
     public boolean canAttach(Wagon wagon) {
-        // TODO
-
-        return false;   // replace by proper outcome
+        if ((isPassengerTrain() && wagon instanceof FreightWagon) // If the wagon type is incorrect.
+             || isFreightTrain() && wagon instanceof PassengerWagon) {
+            return false;
+        } else // If the wagon isn't already present.
+            if (getNumberOfWagons() + 1 > engine.getMaxWagons()) { // If the number of wagons exceeds the max.
+            return false;
+        } else return findWagonById(wagon.getId()) == null; // !! TODO: CODE DOESN'T WORK YET.
     }
 
     /**
