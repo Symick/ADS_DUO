@@ -199,9 +199,9 @@ public class Train {
              || isFreightTrain() && wagon instanceof PassengerWagon) {
             return false;
         } else // If the wagon isn't already present.
-            if (getNumberOfWagons() + 1 > engine.getMaxWagons()) { // If the number of wagons exceeds the max.
+            if (getNumberOfWagons() + wagon.getSequenceLength() > engine.getMaxWagons()) { // If the number of wagons exceeds the max.
             return false;
-        } else return findWagonById(wagon.getId()) == null; // !! TODO: CODE DOESN'T WORK YET.
+        } else return findWagonById(wagon.getId()) == null;
     }
 
     /**
@@ -213,9 +213,21 @@ public class Train {
      * @return  whether the attachment could be completed successfully
      */
     public boolean attachToRear(Wagon wagon) {
-        // TODO
+        if (!canAttach(wagon)) {
+            return false;
+        }
 
-        return false;   // replace by proper outcome
+        if (!hasWagons()) {
+            setFirstWagon(wagon);
+            return true;
+        }
+
+        Wagon head = getFirstWagon(); // wat is er gaande??
+        head.detachFront();
+
+
+        getLastWagonAttached().setNextWagon(wagon);
+        return true;
     }
 
     /**

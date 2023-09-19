@@ -26,7 +26,7 @@ public abstract class Wagon {
         return nextWagon;
     }
 
-    private void setNextWagon(Wagon nextWagon) {
+    public void setNextWagon(Wagon nextWagon) {
         this.nextWagon = nextWagon;
     }
 
@@ -34,7 +34,7 @@ public abstract class Wagon {
         return previousWagon;
     }
 
-    private void setPreviousWagon(Wagon previousWagon) {
+    public void setPreviousWagon(Wagon previousWagon) {
         this.previousWagon = previousWagon;
     }
 
