@@ -40,4 +40,9 @@ public class customTest {
     public void T01_WagonReverseShouldNotThrowException() {
         assertDoesNotThrow(() -> {passengerWagon1.reverseSequence();});
     }
+
+    @Test
+    public void T02_ReversingASingleWagonShouldReturnItself() {
+        assertEquals(passengerWagon1, passengerWagon1.reverseSequence());
+    }
 }
