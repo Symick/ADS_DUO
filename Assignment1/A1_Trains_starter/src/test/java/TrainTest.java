@@ -227,9 +227,7 @@ public class TrainTest {
 
     @Test
     public void T18_CanInsertAtFront() {
-        System.out.println(freightTrain);
         assertTrue(freightTrain.insertAtFront(freightWagon1));
-        System.out.println(freightTrain);
         assertEquals(5, freightTrain.getNumberOfWagons());
         assertSame(freightWagon1, freightTrain.getFirstWagon(),
                 "insertAtFront should insert the first wagon at position 1");
