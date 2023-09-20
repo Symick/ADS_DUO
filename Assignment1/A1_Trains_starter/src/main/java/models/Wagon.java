@@ -210,6 +210,11 @@ public abstract class Wagon {
         Wagon reverse = null;
         Wagon current = this;
         while (current != null) {
+            //foreach iteration the current should be the head of the sequence. i.e. it shouldn't have a previous
+            if (current.hasPreviousWagon()) {
+                throw new IllegalStateException("Current wagon has a previous wagon unexpectedly.");
+            }
+
             Wagon next = current.getNextWagon();
             //remove tail, this also has a side effect that the next wagon doesn't have a front anymore
             current.detachTail();
