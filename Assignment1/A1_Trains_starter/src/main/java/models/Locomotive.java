@@ -14,5 +14,8 @@ public class Locomotive {
         return maxWagons;
     }
 
-    // TODO
+    @Override
+    public String toString() {
+        return String.format("[Loc-%d]", locNumber);
+    }
 }

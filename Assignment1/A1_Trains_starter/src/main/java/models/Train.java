@@ -198,10 +198,11 @@ public class Train {
         if ((isPassengerTrain() && wagon instanceof FreightWagon) // If the wagon type is incorrect.
              || isFreightTrain() && wagon instanceof PassengerWagon) {
             return false;
-        } else // If the wagon isn't already present.
-            if (getNumberOfWagons() + wagon.getSequenceLength() > engine.getMaxWagons()) { // If the number of wagons exceeds the max.
-            return false;
-        } else return findWagonById(wagon.getId()) == null;
+        } else if (getNumberOfWagons() + wagon.getSequenceLength() > engine.getMaxWagons()) {
+            return false; // If the number of wagons exceeds the max.
+        }
+
+        return findWagonById(wagon.getId()) == null; // If the wagon isn't already present.
     }
 
     /**
@@ -218,15 +219,11 @@ public class Train {
         }
 
         if (!hasWagons()) {
-            setFirstWagon(wagon);
-            return true;
+            firstWagon = wagon;
+        } else {
+            this.getLastWagonAttached().attachTail(wagon);
         }
 
-        Wagon head = getFirstWagon(); // wat is er gaande??
-        head.detachFront();
-
-
-        getLastWagonAttached().setNextWagon(wagon);
         return true;
     }
 
@@ -240,9 +237,10 @@ public class Train {
      * @return  whether the insertion could be completed successfully
      */
     public boolean insertAtFront(Wagon wagon) {
-        // TODO
 
-        return false;   // replace by proper outcome
+
+
+        return false;
     }
 
     /**
@@ -294,9 +292,23 @@ public class Train {
      * @return  whether the move could be completed successfully
      */
     public boolean splitAtPosition(int position, Train toTrain) {
-        // TODO
+        if (!hasWagons()) {
+            return false;
+        }
 
-        return false;   // replace by proper outcome
+//        System.out.println(this);
+        Wagon splitWagon = findWagonAtPosition(position);
+//        System.out.println(splitWagon);
+
+        if (!toTrain.canAttach(splitWagon) || splitWagon == null) {
+            return false;
+        }
+
+        toTrain.getLastWagonAttached().attachTail(splitWagon.detachTail());
+
+//        System.out.println(splitWagon);
+
+        return true;   // replace by proper outcome
     }
 
     /**
@@ -311,9 +323,17 @@ public class Train {
 
     }
 
-    // TODO string representation of a train
     @Override
     public String toString() {
-        return String.format("from %s to %s", origin, destination);
+        StringBuilder trainStr = new StringBuilder(engine.toString());
+        Wagon currentWagon = firstWagon;
+
+        while (currentWagon != null) {
+            trainStr.append(currentWagon);
+            currentWagon = currentWagon.getNextWagon();
+        }
+
+        return String.format("%s with %d %s from %s to %s",
+                trainStr, getNumberOfWagons(), getNumberOfWagons() == 1 ? "wagon" : "wagons", origin, destination);
     }
 }
