@@ -217,7 +217,7 @@ public class Train {
         if (!hasWagons()) {
             firstWagon = wagon;
         } else {
-            this.getLastWagonAttached().attachTail(wagon);
+            getLastWagonAttached().attachTail(wagon);
         }
 
         return true;
@@ -242,12 +242,14 @@ public class Train {
         if (!hasWagons()) {
             firstWagon = wagon;
         } else {
-            Wagon previousHead = firstWagon.detachTail();
+            // Save the previous first wagon.
             Wagon previousFirstWagon = firstWagon;
 
+            // Replace first wagon by new first wagon.
             firstWagon = wagon;
-            this.getLastWagonAttached().attachTail(previousFirstWagon);
-            this.getLastWagonAttached().attachTail(previousHead);
+
+            // Attach the previously saved first wagon to the tail of the current last wagon.
+            wagon.getLastWagonAttached().attachTail(previousFirstWagon);
         }
 
         return true;
@@ -276,21 +278,30 @@ public class Train {
 
         if (!hasWagons()) {
             firstWagon = wagon;
-        } else if (position == getNumberOfWagons()) {
-            getLastWagonAttached().attachTail(wagon);
         } else {
             Wagon previousWagonAtPosition = findWagonAtPosition(position);
 
-            wagon.setPreviousWagon(previousWagonAtPosition.getPreviousWagon());
             if (position == 0) {
-                firstWagon.setNextWagon(wagon);
+                // Save the previous first wagon.
+                Wagon previousFirstWagon = firstWagon;
+
+                // Replace the first wagon with the new first wagon.
+                firstWagon = wagon;
+
+                // Attach the previous first wagon to the tail of the new last wagon.
+                wagon.getLastWagonAttached().attachTail(previousFirstWagon);
+            } else if (position == getNumberOfWagons()) { // If the position is at the end of the sequence.
+                getLastWagonAttached().attachTail(wagon);
             } else {
-                previousWagonAtPosition.getPreviousWagon().setNextWagon(wagon);
+                // Detach from predecessors.
+                previousWagonAtPosition.detachFront();
 
+                // Replace position wagon with new wagon.
+                firstWagon.getLastWagonAttached().attachTail(wagon);
+
+                // Attach previous wagon to tail of new wagon
+                wagon.getLastWagonAttached().attachTail(previousWagonAtPosition);
             }
-
-            previousWagonAtPosition.setPreviousWagon(getLastWagonAttached());
-            previousWagonAtPosition.setNextWagon(null);
         }
 
         return true;

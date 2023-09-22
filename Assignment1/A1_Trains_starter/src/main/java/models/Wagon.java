@@ -144,9 +144,8 @@ public abstract class Wagon {
         prev.setNextWagon(null);
         //this wagon becomes front, and doesn't have a previous anymore
         this.setPreviousWagon(null);
+
         return prev;
-
-
     }
 
     /**
