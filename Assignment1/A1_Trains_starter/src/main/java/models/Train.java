@@ -242,12 +242,15 @@ public class Train {
         if (!hasWagons()) {
             firstWagon = wagon;
         } else {
-            Wagon previousHead = firstWagon.detachFront();
+            Wagon previousHead = firstWagon.detachTail();
+            Wagon previousFirstWagon = firstWagon;
+
             firstWagon = wagon;
+            this.getLastWagonAttached().attachTail(previousFirstWagon);
             this.getLastWagonAttached().attachTail(previousHead);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -265,9 +268,32 @@ public class Train {
      * @return  whether the insertion could be completed successfully
      */
     public boolean insertAtPosition(int position, Wagon wagon) {
-        // TODO
+        if (!canAttach(wagon)) {
+            return false;
+        }
 
-        return false;   // replace by proper outcome
+        wagon.detachFront();
+
+        if (!hasWagons()) {
+            firstWagon = wagon;
+        } else if (position == getNumberOfWagons()) {
+            getLastWagonAttached().attachTail(wagon);
+        } else {
+            Wagon previousWagonAtPosition = findWagonAtPosition(position);
+
+            wagon.setPreviousWagon(previousWagonAtPosition.getPreviousWagon());
+            if (position == 0) {
+                firstWagon.setNextWagon(wagon);
+            } else {
+                previousWagonAtPosition.getPreviousWagon().setNextWagon(wagon);
+
+            }
+
+            previousWagonAtPosition.setPreviousWagon(getLastWagonAttached());
+            previousWagonAtPosition.setNextWagon(null);
+        }
+
+        return true;
     }
 
     /**

@@ -337,7 +337,6 @@ public class TrainTest {
                 "cannot split 2 wagons towards an almost full passenger train");
         assertEquals(3, trainWithoutWagons.getNumberOfWagons());
         assertEquals(7, passengerTrain.getNumberOfWagons());
-        System.out.println("TRAIN: " + trainWithoutWagons);
         assertTrue(trainWithoutWagons.splitAtPosition(2, passengerTrain),
                 "can split 1 wagon towards a passenger train with one more capacity");
         assertEquals(2, trainWithoutWagons.getNumberOfWagons());
