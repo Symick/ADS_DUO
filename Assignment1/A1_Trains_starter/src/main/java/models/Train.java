@@ -262,36 +262,26 @@ public class Train {
      * @return  whether the insertion could be completed successfully
      */
     public boolean insertAtPosition(int position, Wagon wagon) {
+        if (position == 0) {
+            return insertAtFront(wagon);
+        } else if (position == getNumberOfWagons()) {
+            return attachToRear(wagon);
+        }
+
         if (!canAttach(wagon)) {
             return false;
         }
 
         wagon.detachFront();
 
-        if (!hasWagons()) {
-            firstWagon = wagon;
-        } else {
-            Wagon previousWagonAtPosition = findWagonAtPosition(position);
+        // Save the previous wagon that was on the position that the new wagon will be placed at.
+        Wagon previousWagonAtPosition = findWagonAtPosition(position);
 
-            if (position == 0) {
-                // Save the previous first wagon.
-                Wagon previousFirstWagon = firstWagon;
+        // Detach the old wagon at the position and replace it with the new wagon.
+        previousWagonAtPosition.detachFront().attachTail(wagon);
 
-                // Replace the first wagon with the new first wagon.
-                firstWagon = wagon;
-
-                // Attach the previous first wagon to the tail of the new last wagon.
-                wagon.getLastWagonAttached().attachTail(previousFirstWagon);
-            } else if (position == getNumberOfWagons()) { // If the position is at the end of the sequence.
-                getLastWagonAttached().attachTail(wagon);
-            } else {
-                // Detach from predecessors and attach new tail.
-                previousWagonAtPosition.detachFront().attachTail(wagon);
-
-                // Attach previous wagon to tail of new wagon
-                wagon.getLastWagonAttached().attachTail(previousWagonAtPosition);
-            }
-        }
+        // Attach previous wagon to tail of new wagon
+        wagon.getLastWagonAttached().attachTail(previousWagonAtPosition);
 
         return true;
     }
@@ -367,7 +357,7 @@ public class Train {
      * (No change if the train has no wagons or only one wagon)
      */
     public void reverse() {
-        if (!hasWagons() || getNumberOfWagons() == 1) {
+        if (!hasWagons()) {
             return;
         }
 
