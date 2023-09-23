@@ -68,15 +68,7 @@ public class Train {
             return 0;
         }
 
-        int wagonCounter = 1;
-        Wagon currentWagon = firstWagon;
-
-        while (currentWagon.hasNextWagon()) {
-            wagonCounter++;
-            currentWagon = currentWagon.getNextWagon();
-        }
-
-        return wagonCounter;
+        return firstWagon.getSequenceLength();
     }
 
     /**
