@@ -285,11 +285,8 @@ public class Train {
             } else if (position == getNumberOfWagons()) { // If the position is at the end of the sequence.
                 getLastWagonAttached().attachTail(wagon);
             } else {
-                // Detach from predecessors.
-                previousWagonAtPosition.detachFront();
-
-                // Replace position wagon with new wagon.
-                firstWagon.getLastWagonAttached().attachTail(wagon);
+                // Detach from predecessors and attach new tail.
+                previousWagonAtPosition.detachFront().attachTail(wagon);
 
                 // Attach previous wagon to tail of new wagon
                 wagon.getLastWagonAttached().attachTail(previousWagonAtPosition);
@@ -312,11 +309,11 @@ public class Train {
      */
     public boolean moveOneWagon(int wagonId, Train toTrain) {
         Wagon wagonToBeMoved = findWagonById(wagonId);
-        if (!toTrain.canAttach(wagonToBeMoved)) {
+        if (wagonToBeMoved == null || !toTrain.canAttach(wagonToBeMoved)) {
             return false;
         }
 
-        if (findWagonAtPosition(0) == wagonToBeMoved) { // If the wagon to be moved is the first wagon.
+        if (firstWagon == wagonToBeMoved) { // If the wagon to be moved is the first wagon.
             // Replace the first wagon by the tail of the previous first wagon.
             firstWagon = wagonToBeMoved.detachTail();
         } else {
@@ -340,8 +337,13 @@ public class Train {
      * @return  whether the move could be completed successfully
      */
     public boolean splitAtPosition(int position, Train toTrain) {
+        if (!hasWagons()) {
+            return false;
+        }
+
         Wagon wagonToSplitFrom = findWagonAtPosition(position);
-        if (!hasWagons() || wagonToSplitFrom == null || !toTrain.canAttach(wagonToSplitFrom)) {
+
+        if (wagonToSplitFrom == null || !toTrain.canAttach(wagonToSplitFrom)) {
             return false;
         }
 
