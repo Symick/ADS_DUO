@@ -319,9 +319,21 @@ public class Train {
      * @return  whether the move could be completed successfully
      */
     public boolean moveOneWagon(int wagonId, Train toTrain) {
-        // TODO
+        Wagon wagonToBeMoved = findWagonById(wagonId);
+        if (!toTrain.canAttach(wagonToBeMoved)) {
+            return false;
+        }
 
-        return false;   // replace by proper outcome
+        if (findWagonAtPosition(0) == wagonToBeMoved) { // If the wagon to be moved is the first wagon.
+            // Replace the first wagon by the tail of the previous first wagon.
+            firstWagon = wagonToBeMoved.detachTail();
+        } else {
+            wagonToBeMoved.removeFromSequence();
+        }
+
+        toTrain.attachToRear(wagonToBeMoved);
+
+        return true;
      }
 
     /**
@@ -336,23 +348,21 @@ public class Train {
      * @return  whether the move could be completed successfully
      */
     public boolean splitAtPosition(int position, Train toTrain) {
-        if (!hasWagons()) {
+        Wagon wagonToSplitFrom = findWagonAtPosition(position);
+        if (!hasWagons() || wagonToSplitFrom == null || !toTrain.canAttach(wagonToSplitFrom)) {
             return false;
         }
 
-//        System.out.println(this);
-        Wagon splitWagon = findWagonAtPosition(position);
-//        System.out.println(splitWagon);
-
-        if (!toTrain.canAttach(splitWagon) || splitWagon == null) {
-            return false;
+        if (position == 0) {
+            firstWagon = null;
+            toTrain.attachToRear(wagonToSplitFrom);
+        } else {
+            // Remove the wagon from its previous sequence.
+            wagonToSplitFrom.detachFront();
+            toTrain.attachToRear(wagonToSplitFrom);
         }
 
-        toTrain.getLastWagonAttached().attachTail(splitWagon.detachTail());
-
-//        System.out.println(splitWagon);
-
-        return true;   // replace by proper outcome
+        return true;
     }
 
     /**
@@ -363,8 +373,11 @@ public class Train {
      * (No change if the train has no wagons or only one wagon)
      */
     public void reverse() {
-        // TODO
+        if (!hasWagons() || getNumberOfWagons() == 1) {
+            return;
+        }
 
+        firstWagon = firstWagon.reverseSequence();
     }
 
     @Override
