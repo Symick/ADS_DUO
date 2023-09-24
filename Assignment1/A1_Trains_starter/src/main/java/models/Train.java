@@ -327,13 +327,13 @@ public class Train {
      * @return  whether the move could be completed successfully
      */
     public boolean splitAtPosition(int position, Train toTrain) {
-        if (!hasWagons()) {
+        // If the train has no wagons, or the position is invalid.
+        if (!hasWagons() || position < 0 || position >= getNumberOfWagons()) {
             return false;
         }
 
         Wagon wagonToSplitFrom = findWagonAtPosition(position);
-
-        if (wagonToSplitFrom == null || !toTrain.canAttach(wagonToSplitFrom)) {
+        if (!toTrain.canAttach(wagonToSplitFrom)) {
             return false;
         }
 
@@ -343,6 +343,7 @@ public class Train {
         } else {
             // Remove the wagon from its previous sequence.
             wagonToSplitFrom.detachFront();
+
             toTrain.attachToRear(wagonToSplitFrom);
         }
 
