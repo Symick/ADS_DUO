@@ -27,11 +27,11 @@ public class TrainsMain {
 
         Locomotive vanGogh = new Locomotive(63427, 6);
         Train amsterdamLondon = new Train(vanGogh, "Amsterdam", "London");
-        amsterdamParis.splitAtPosition(4, amsterdamLondon);
+        amsterdamParis.splitAtPosition(3, amsterdamLondon);
         amsterdamLondon.reverse();
         amsterdamLondon.insertAtFront((Wagon)(Object)new FreightWagon(9001, 50000));
         amsterdamParis.reverse();
-        amsterdamParis.splitAtPosition(1, amsterdamLondon);
+        amsterdamParis.splitAtPosition(0, amsterdamLondon);
         amsterdamParis.attachToRear(amsterdamLondon.getLastWagonAttached());
         amsterdamLondon.moveOneWagon(8003, amsterdamParis);
 
