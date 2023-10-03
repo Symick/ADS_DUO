@@ -87,7 +87,7 @@ public class Detection {
         final int MINIMAL_EMISSION = 6;
         Boolean isDieselTruck = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
         Boolean isDieselCoach = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
-        if ((isDieselCoach || isDieselTruck) && car.getEmissionCategory() == MINIMAL_EMISSION) {
+        if ((isDieselCoach || isDieselTruck) && car.getEmissionCategory() < MINIMAL_EMISSION) {
             return new Violation(car, city);
         }
 
