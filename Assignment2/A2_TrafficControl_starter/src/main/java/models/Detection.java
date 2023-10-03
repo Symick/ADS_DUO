@@ -59,11 +59,13 @@ public class Detection {
             //try and parse a date with the IsoDate format
             date = LocalDateTime.parse(detectionInfo[2].trim(), DateTimeFormatter.ISO_DATE_TIME);
         } catch (DateTimeParseException ex) {
-            return null;
+            System.out.println(ex.getMessage());
+            return null; //if date can't be parsed return null
         }
-        Car tempCar = new Car(licensePlate);
+        Car tempCar = new Car(licensePlate); //temporary car to test if license plate is already in the list.
         int indexOfCar = cars.indexOf(tempCar);
 
+        //if car is not in the list i.e. indexOF return -1 then add car to the list.
         if (indexOfCar == -1) {
             cars.add(tempCar);
             newDetection = new Detection(tempCar, city, date);
