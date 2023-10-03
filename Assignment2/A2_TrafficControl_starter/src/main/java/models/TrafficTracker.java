@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 
@@ -117,12 +118,17 @@ public class TrafficTracker {
      * @return      the total amount of money recovered from all violations
      */
     public double calculateTotalFines() {
+        final double TRUCK_FINE = 25.00;
+        final double COACH_FINE = 35.00;
 
         return this.violations.aggregate(
-                // TODO provide a calculator function for the specified fine scheme
-                //  of €25 per truck-offence and €35 per coach-offence
-
-                null  // replace this reference
+                (violation) -> {
+                    if (violation.getCar().getCarType() == Car.CarType.Truck) {
+                        return TRUCK_FINE;
+                    } else {
+                        return COACH_FINE;
+                    }
+                }
         );
     }
 
