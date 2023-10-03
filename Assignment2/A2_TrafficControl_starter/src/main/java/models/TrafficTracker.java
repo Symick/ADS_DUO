@@ -18,9 +18,8 @@ public class TrafficTracker {
         // TODO initialize cars with an empty ordered list which sorts items by licensePlate.
         //  initalize violations with an empty ordered list which sorts items by car and city.
         //  Use your generic implementation class OrderedArrayList
-        cars = new OrderedArrayList<>();
-        violations = new OrderedArrayList<>();
-
+        cars = new OrderedArrayList<>(Car::compareTo);
+        violations = new OrderedArrayList<>(Violation::compareByLicensePlateAndCity);
     }
 
     /**
@@ -185,12 +184,9 @@ public class TrafficTracker {
             String line = scanner.nextLine();
             numberOfLines++;
 
-            // TODO convert the line to an instance of E
+            E item = converter.apply(line);
 
-
-
-            // TODO add a successfully converted item to the list of items
-
+            items.add(item);
 
         }
 
