@@ -184,10 +184,9 @@ public class OrderedArrayList<E>
     public double aggregate(Function<E, Double> mapper) {
         double sum = 0.0;
 
-        // TODO loop over all items and use the mapper
-        //  to calculate and accumulate the contribution of each item
-
-
+        for (E item: this) {
+            sum += mapper.apply(item);
+        }
         return sum;
     }
 }
