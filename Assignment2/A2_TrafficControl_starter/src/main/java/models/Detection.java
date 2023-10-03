@@ -1,8 +1,13 @@
 package models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 
 import static models.Car.CarType;
 import static models.Car.FuelType;
@@ -37,10 +42,34 @@ public class Detection {
      */
     public static Detection fromLine(String textLine, List<Car> cars) {
         Detection newDetection = null;
-
         // TODO convert the information in the textLine into a new Detection instance
         //  use the cars.indexOf to find the car that is associated with the licensePlate of the detection
         //  if no car can be found a new Car shall be instantiated and added to the list and associated with the detection
+
+        String[] detectionInfo = textLine.split(",");
+
+        //info should contain 3 pieces of information, licenseplate, city and date
+        if (detectionInfo.length != 3) {
+            return null;
+        }
+        String licensePlate = detectionInfo[0].trim();
+        String city = detectionInfo[1].trim();
+        LocalDateTime date;
+        try {
+            //try and parse a date with the IsoDate format
+            date = LocalDateTime.parse(detectionInfo[2].trim(), DateTimeFormatter.ISO_DATE_TIME);
+        } catch (DateTimeParseException ex) {
+            return null;
+        }
+        Car tempCar = new Car(licensePlate);
+        int indexOfCar = cars.indexOf(tempCar);
+
+        if (indexOfCar == -1) {
+            cars.add(tempCar);
+            newDetection = new Detection(tempCar, city, date);
+        } else {
+            newDetection = new Detection(cars.get(indexOfCar), city, date);
+        }
 
 
         return newDetection;
@@ -55,7 +84,12 @@ public class Detection {
      */
     public Violation validatePurple() {
         // TODO validate that diesel trucks and diesel coaches have an emission category of 6 or above
-
+        final int MINIMAL_EMISSION = 6;
+        Boolean isDieselTruck = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
+        Boolean isDieselCoach = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
+        if ((isDieselCoach || isDieselTruck) && car.getEmissionCategory() == MINIMAL_EMISSION) {
+            return new Violation(car, city);
+        }
 
         return null;
     }
@@ -77,7 +111,7 @@ public class Detection {
     public String toString() {
         // TODO represent the detection in the format: licensePlate/city/dateTime
 
-        return "TODO:Detection.toString";       // replace by a proper outcome
+        return String.format("%s/%s/%s", car.getLicensePlate(), city, dateTime.format(DateTimeFormatter.ISO_DATE_TIME));       // replace by a proper outcome
     }
 
 }
