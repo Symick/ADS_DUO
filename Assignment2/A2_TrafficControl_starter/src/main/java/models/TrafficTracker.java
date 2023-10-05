@@ -124,9 +124,9 @@ public class TrafficTracker {
         return this.violations.aggregate(
                 (violation) -> {
                     if (violation.getCar().getCarType() == Car.CarType.Truck) {
-                        return TRUCK_FINE;
+                        return TRUCK_FINE * violation.getOffencesCount();
                     } else {
-                        return COACH_FINE;
+                        return COACH_FINE * violation.getOffencesCount();
                     }
                 }
         );
