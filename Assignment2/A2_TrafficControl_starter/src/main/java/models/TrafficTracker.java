@@ -190,7 +190,6 @@ public class TrafficTracker {
             E item = converter.apply(line);
 
             items.add(item);
-
         }
 
         //System.out.printf("Imported %d lines from %s.\n", numberOfLines, file.getPath());

@@ -49,6 +49,37 @@ public class OrderedArrayList<E>
     //  (hint: only change nSorted as required to guarantee the representation invariant,
     //   do not invoke a sort or reorder items otherwise differently than is specified by the ArrayList contract)
 
+
+    @Override
+    public void add(int index, E element) {
+        super.add(index, element);
+        //set nSorted to the current index, because only the items before the newly added element are guarenteed to be sorted
+        // the element of index itself could be of any kind, so after the insertion it is not certain that the list is sorted
+        // Therefore nSorted should be re-instantiated
+        if (index < nSorted) {
+            nSorted = index;
+        }
+    }
+
+    @Override
+    public E remove(int index) {
+
+        E toRemove = super.remove(index);
+        //decrement after super.remove is invoked if remove throws an exception nSorted is not decremented
+        nSorted-- ;
+        return toRemove;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        boolean isRemoved = super.remove(o);
+        // only decrement nSorted if object is really removed
+        if (isRemoved) {
+            nSorted--;
+        }
+        return isRemoved;
+    }
+
     @Override
     public void sort() {
         if (this.nSorted < this.size()) {
