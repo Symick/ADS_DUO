@@ -151,14 +151,12 @@ public class TrafficTracker {
      * @return              a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCar(int topNumber) {
+        List<Violation> violationsCopy = this.violations;
 
-        // TODO merge all violations from this.violations into a new OrderedArrayList
-        //   which orders and aggregates violations by city
-        // TODO sort the new list by decreasing offencesCount.
-        // TODO use .subList to return only the topNumber of violations from the sorted list
-        //  (You may want to prepare/reuse a local private method for all this)
+        // Sort the new list by decreasing offencesCount.
+        violationsCopy.sort((v1, v2) -> v2.getOffencesCount() - v1.getOffencesCount());
 
-        return null;  // replace this reference
+        return violationsCopy.subList(0, topNumber);
     }
 
     /**
@@ -168,6 +166,8 @@ public class TrafficTracker {
      * @return              a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCity(int topNumber) {
+        List<Violation> violationsCopy = this.violations;
+
 
         // TODO merge all violations from this.violations into a new OrderedArrayList
         //   which orders and aggregates violations by Car
