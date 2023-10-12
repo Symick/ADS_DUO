@@ -53,7 +53,7 @@ public class OrderedArrayList<E>
     @Override
     public void add(int index, E element) {
         super.add(index, element);
-        //set nSorted to the current index, because only the items before the newly added element are guarenteed to be sorted
+        //set nSorted to the current index, because only the items before the newly added element are guaranteed to be sorted
         // the element of index itself could be of any kind, so after the insertion it is not certain that the list is sorted
         // Therefore nSorted should be re-instantiated
         if (index < nSorted) {
