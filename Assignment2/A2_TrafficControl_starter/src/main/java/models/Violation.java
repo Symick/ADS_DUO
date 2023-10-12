@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class Violation {
     private final Car car;
     private final String city;
@@ -58,6 +60,19 @@ public class Violation {
 
     public void setOffencesCount(int offencesCount) {
         this.offencesCount = offencesCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Violation violation = (Violation) o;
+        return offencesCount == violation.offencesCount && car.equals(violation.getCar()) && city.equals(violation.city);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(car, city, offencesCount);
     }
 
     // TODO represent the violation in the format: licensePlate/city/offencesCount

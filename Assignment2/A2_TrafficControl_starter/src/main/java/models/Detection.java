@@ -88,7 +88,7 @@ public class Detection {
         // TODO validate that diesel trucks and diesel coaches have an emission category of 6 or above
         final int MINIMAL_EMISSION = 6;
         Boolean isDieselTruck = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
-        Boolean isDieselCoach = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
+        Boolean isDieselCoach = car.getCarType() == CarType.Coach && car.getFuelType() == FuelType.Diesel;
         if ((isDieselCoach || isDieselTruck) && car.getEmissionCategory() < MINIMAL_EMISSION) {
             return new Violation(car, city);
         }
