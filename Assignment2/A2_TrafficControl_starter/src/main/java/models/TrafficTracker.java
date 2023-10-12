@@ -97,7 +97,6 @@ public class TrafficTracker {
         //  using the importItemsFromFile helper method and the Detection.fromLine parser.
 
 
-
         System.out.printf("Imported %d detections from %s.\n", newDetections.size(), file.getPath());
 
         int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the data in this file

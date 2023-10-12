@@ -43,13 +43,6 @@ public class OrderedArrayList<E>
         this.nSorted = this.size();
     }
 
-    // TODO override the ArrayList.add(index, item), ArrayList.remove(index) and Collection.remove(object) methods
-    //  such that they both meet the ArrayList contract of these methods (see ArrayList JavaDoc)
-    //  and sustain the representation invariant of OrderedArrayList
-    //  (hint: only change nSorted as required to guarantee the representation invariant,
-    //   do not invoke a sort or reorder items otherwise differently than is specified by the ArrayList contract)
-
-
     @Override
     public void add(int index, E element) {
         super.add(index, element);
@@ -118,9 +111,6 @@ public class OrderedArrayList<E>
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByIterativeBinarySearch(E searchItem) {
-
-        // TODO implement an iterative binary search on the sorted section of the arrayList, 0 <= index < nSorted
-        //   to find the position of an item that matches searchItem (this.sortOrder comparator yields a 0 result)
         int left = 0;
         int right = nSorted - 1;
         int mid = 0;
@@ -143,7 +133,7 @@ public class OrderedArrayList<E>
             }
 
         }
-        // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
+
         for (int i = nSorted; i < this.size(); i++) {
             if (this.sortOrder.compare(this.get(i), searchItem) == 0) {
                 return i;
