@@ -134,18 +134,24 @@ public class OrderedArrayList<E>
 
         }
 
-        for (int i = nSorted; i < this.size(); i++) {
+        // Use linear search to find the item in the unsorted section of the arrayList.
+        return linearSearch(searchItem);
+    }
+
+    /**
+     * Finds the position of the searchItem in the unsorted section of the arrayList by linear search.
+     * @param searchItem  The item to be searched on the basis of comparison by this.sortOrder.
+     * @return            The position index of the found item in the arrayList, or -1 if no item matches the search item.
+     */
+    public int linearSearch(E searchItem) {
+        for (int i = 0; i < this.size(); i++) {
             if (this.sortOrder.compare(this.get(i), searchItem) == 0) {
                 return i;
             }
         }
 
-        return -1;  // nothing was found ???
+        return -1; // When nothing is found.
     }
-
-    static int left = 0;
-    static int right;
-    static int mid;
 
     /**
      * finds the position of the searchItem by a recursive binary search algorithm in the
@@ -158,34 +164,44 @@ public class OrderedArrayList<E>
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByRecursiveBinarySearch(E searchItem) {
-        right = nSorted - 1;
+        int index = recursiveBinarySearch(searchItem, 0, nSorted - 1);
 
-        // If left is greater than right, then element is not present in the array.
-        if (left <= right) {
-            mid = left + (right - left) / 2; // Calculate middle index.
-            // If searchItem is present at mid, return mid.
-            if (this.sortOrder.compare(this.get(mid), searchItem) == 0) {
-                return mid;
-            }
-
-            // If searchItem is smaller than mid, then it can only be present in left subarray.
-            if (this.sortOrder.compare(this.get(mid), searchItem) > 0) {
-                mid -= 1;
-                return indexOfByRecursiveBinarySearch(searchItem);
-            } else { // Else the searchItem can only be present in right subarray.
-                mid += 1;
-                return indexOfByRecursiveBinarySearch(searchItem);
-            }
+        // In the event that the item is not found in the sorted section,
+        // the unsorted section of the arrayList shall be searched by linear search.
+        if (index == -1) {
+            return linearSearch(searchItem);
         }
 
-        // Linear search for searchItem in the unsorted section of the arrayList.
-        for (int i = nSorted; i < this.size(); i++) {
-            if (this.sortOrder.compare(this.get(i), searchItem) == 0) {
-                return i;
-            }
+        return index;
+    }
+
+    /**
+     * Finds the position of the searchItem by a recursive binary search algorithm.
+     * @param searchItem  The item to be searched on the basis of comparison by this.sortOrder
+     * @param left        The left index of the array.
+     * @param right       The right index of the array.
+     * @return            Position index of the found item in the arrayList, or -1 if no item matches the search item.
+     */
+    public int recursiveBinarySearch(E searchItem, int left, int right) {
+        if (left > right) { // if left is greater than right, then the search item is not found.
+            return -1;
         }
 
-        return -1;
+        // Select middle element of array.
+        int mid = (left + right) / 2;
+
+        // If the mid is equal to the item that means that search item is found.
+        if (this.sortOrder.compare(this.get(mid), searchItem) == 0) {
+            return mid;
+        }
+
+        // If the mid is less than the item that means that search item is positioned to the right of the current mid.
+        if (this.sortOrder.compare(this.get(mid), searchItem) < 0) {
+            return recursiveBinarySearch(searchItem, mid + 1, right);
+        } else {
+            // If the mid is more than the item that means that search item is positioned to the left of the current mid.
+            return recursiveBinarySearch(searchItem, left, mid - 1);
+        }
     }
 
     /**
@@ -193,7 +209,7 @@ public class OrderedArrayList<E>
      * i.e. the found match is replaced by the outcome of the merge between the match and the newItem
      * If no match is found in the list, the newItem is added to the list.
      *
-     * @param newItem
+     * @param newItem  the item to be merged into the list.
      * @param merger  a function that takes two items and returns an item that contains the merged content of
      *                the two items according to some merging rule.
      *                e.g. a merger could add the value of attribute X of the second item
