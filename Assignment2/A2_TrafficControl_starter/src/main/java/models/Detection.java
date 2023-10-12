@@ -106,8 +106,6 @@ public class Detection {
 
     @Override
     public String toString() {
-        // TODO represent the detection in the format: licensePlate/city/dateTime
-
         return String.format("%s/%s/%s", car.getLicensePlate(), city, dateTime.format(DateTimeFormatter.ISO_DATE_TIME));       // replace by a proper outcome
     }
 

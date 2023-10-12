@@ -66,10 +66,10 @@ public class TrafficTracker {
             //  retrieve a list of all files and sub folders in this directory
             File[] filesInDirectory = Objects.requireNonNullElse(file.listFiles(), new File[0]);
 
-            // TODO recursively process all files and sub folders from the filesInDirectory list.
-            //  also track the total number of offences found
-
-
+            // Process all files and sub folders from the filesInDirectory list.
+            for (File fileInDirectory : filesInDirectory) {
+                totalNumberOfOffences += this.mergeDetectionsFromVaultRecursively(fileInDirectory);
+            }
 
         } else if (file.getName().matches(TRAFFIC_FILE_PATTERN)) {
             // the file is a regular file that matches the target pattern for raw detection files
@@ -86,27 +86,40 @@ public class TrafficTracker {
      * @param file
      */
     private int mergeDetectionsFromFile(File file) {
-
-        // re-sort the accumulated violations for efficient searching and merging
+        // Re-sort the accumulated violations for efficient searching and merging.
         this.violations.sort();
 
-        // use a regular ArrayList to load the raw detection info from the file
+        // Use a regular ArrayList to load the raw detection info from the file.
         List<Detection> newDetections = new ArrayList<>();
 
-        // TODO import all detections from the specified file into the newDetections list
-        //  using the importItemsFromFile helper method and the Detection.fromLine parser.
-
+        // Import all detections from the specified file into the newDetections list.
+        importItemsFromFile(newDetections, file, textLine -> Detection.fromLine(textLine, this.cars));
 
         System.out.printf("Imported %d detections from %s.\n", newDetections.size(), file.getPath());
 
         int totalNumberOfOffences = 0; // tracks the number of offences that emerges from the data in this file
 
-        // TODO validate all detections against the purple criteria and
-        //  merge any resulting offences into this.violations, accumulating offences per car and per city
-        //  also keep track of the totalNumberOfOffences for reporting
+        // Validate all detections against the purple criteria.
+        for (Detection detection : newDetections) {
+            Violation violation = detection.validatePurple();
 
+            // Skip any detections that do not violate purple rules.
+            if (violation == null) {
+                continue;
+            }
 
+            // Merge any resulting offences into this.violations, accumulating offences per car and per city.
+            int indexOfViolation = this.violations.indexOf(violation);
+            if (indexOfViolation == -1) {
+                this.violations.add(violation);
+            } else { // if the violation already exists, add the offencesCount to the existing violation.
+                Violation existingViolation = this.violations.get(indexOfViolation);
+                existingViolation.setOffencesCount(existingViolation.getOffencesCount() + violation.getOffencesCount());
+            }
 
+            // Keep track of the totalNumberOfOffences for reporting.
+            totalNumberOfOffences += violation.getOffencesCount();
+        }
 
         return totalNumberOfOffences;
     }
@@ -191,7 +204,6 @@ public class TrafficTracker {
             items.add(item);
         }
 
-        //System.out.printf("Imported %d lines from %s.\n", numberOfLines, file.getPath());
         return numberOfLines;
     }
 

@@ -145,6 +145,7 @@ public class OrderedArrayList<E>
      */
     public int linearSearch(E searchItem) {
         for (int i = 0; i < this.size(); i++) {
+            // If the item is found, return the index.
             if (this.sortOrder.compare(this.get(i), searchItem) == 0) {
                 return i;
             }
@@ -210,24 +211,26 @@ public class OrderedArrayList<E>
      * If no match is found in the list, the newItem is added to the list.
      *
      * @param newItem  the item to be merged into the list.
-     * @param merger  a function that takes two items and returns an item that contains the merged content of
-     *                the two items according to some merging rule.
-     *                e.g. a merger could add the value of attribute X of the second item
-     *                to attribute X of the first item and then return the first item
-     * @return whether a new item was added to the list or not
+     * @param merger   a function that takes two items and returns an item that contains the merged content of
+     *                 the two items according to some merging rule.
+     *                 e.g. a merger could add the value of attribute X of the second item
+     *                 to attribute X of the first item and then return the first item
+     * @return         true if the newItem was added to the list, false if a match was found and the match was
+     *                 replaced by the outcome of the merge.
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
         if (newItem == null) return false;
         int matchedItemIndex = this.indexOfByRecursiveBinarySearch(newItem);
 
+        // If no match is found in the list, the newItem is added to the list.
         if (matchedItemIndex < 0) {
             this.add(newItem);
             return true;
         } else {
-            // TODO retrieve the matched item and
-            //  replace the matched item in the list with the merger of the matched item and the newItem
-
+            // If a match is found, the matched item is replaced by the outcome of the merge between the match and the newItem.
+            E matchedItem = this.get(matchedItemIndex);
+            this.set(matchedItemIndex, merger.apply(matchedItem, newItem));
 
             return false;
         }
