@@ -153,6 +153,10 @@ public class OrderedArrayList<E>
         return -1;  // nothing was found ???
     }
 
+    static int left = 0;
+    static int right;
+    static int mid;
+
     /**
      * finds the position of the searchItem by a recursive binary search algorithm in the
      * sorted section of the arrayList, using the this.sortOrder comparator for comparison and equality test.
@@ -164,17 +168,35 @@ public class OrderedArrayList<E>
      * @return the position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int indexOfByRecursiveBinarySearch(E searchItem) {
+        right = nSorted - 1;
 
-        // TODO implement a recursive binary search on the sorted section of the arrayList, 0 <= index < nSorted
-        //   to find the position of an item that matches searchItem (this.sortOrder comparator yields a 0 result)
+        // If left is greater than right, then element is not present in the array.
+        if (left <= right) {
+            mid = left + (right - left) / 2; // Calculate middle index.
+            // If searchItem is present at mid, return mid.
+            if (this.sortOrder.compare(this.get(mid), searchItem) == 0) {
+                return mid;
+            }
 
+            // If searchItem is smaller than mid, then it can only be present in left subarray.
+            if (this.sortOrder.compare(this.get(mid), searchItem) > 0) {
+                mid -= 1;
+                return indexOfByRecursiveBinarySearch(searchItem);
+            } else { // Else the searchItem can only be present in right subarray.
+                mid += 1;
+                return indexOfByRecursiveBinarySearch(searchItem);
+            }
+        }
 
-        // TODO if no match was found, attempt a linear search of searchItem in the section nSorted <= index < size()
+        // Linear search for searchItem in the unsorted section of the arrayList.
+        for (int i = nSorted; i < this.size(); i++) {
+            if (this.sortOrder.compare(this.get(i), searchItem) == 0) {
+                return i;
+            }
+        }
 
-
-        return -1;  // nothing was found ???
+        return -1;
     }
-
 
     /**
      * finds a match of newItem in the list and applies the merger operator with the newItem to that match
