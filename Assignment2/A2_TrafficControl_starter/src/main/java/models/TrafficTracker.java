@@ -109,13 +109,7 @@ public class TrafficTracker {
             }
 
             // Merge any resulting offences into this.violations, accumulating offences per car and per city.
-            int indexOfViolation = this.violations.indexOf(violation);
-            if (indexOfViolation == -1) {
-                this.violations.add(violation);
-            } else { // if the violation already exists, add the offencesCount to the existing violation.
-                Violation existingViolation = this.violations.get(indexOfViolation);
-                existingViolation.setOffencesCount(existingViolation.getOffencesCount() + violation.getOffencesCount());
-            }
+            this.violations.merge(violation, Violation::combineOffencesCounts);
 
             // Keep track of the totalNumberOfOffences for reporting.
             totalNumberOfOffences += violation.getOffencesCount();
