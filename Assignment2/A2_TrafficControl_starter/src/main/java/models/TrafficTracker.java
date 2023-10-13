@@ -153,10 +153,36 @@ public class TrafficTracker {
     public List<Violation> topViolationsByCar(int topNumber) {
         List<Violation> violationsCopy = this.violations;
 
-        // Sort the new list by decreasing offencesCount.
-        violationsCopy.sort((v1, v2) -> v2.getOffencesCount() - v1.getOffencesCount());
+        // Group the violations by car. This is essential for the next step.
+        violationsCopy.sort(Comparator.comparing(Violation::getCar));
 
-        return violationsCopy.subList(0, topNumber);
+        List<Violation> violationsByCar = new ArrayList<>();
+        for (Violation violation : violationsCopy) {
+            // If the violationsByCar list is empty or the last violation in the list does not match the current violation.
+            // If the violationsCopy has not been sorted by car, this will not work. Because the last violation in the
+            // list will not necessarily be the last violation of the car.
+            if (violationsByCar.isEmpty() || !violationsByCar.get(violationsByCar.size() - 1).getCar().equals(violation.getCar())) {
+                violationsByCar.add(new Violation(violation.getCar(), null));
+
+                // Set the offencesCount of the new violation to the offencesCount of the current violation.
+                violationsByCar.get(violationsByCar.size() - 1).setOffencesCount(violation.getOffencesCount());
+            } else { // If the last violation in the list matches the current violation. Meaning that the car is the same.
+                Violation existingViolation = violationsByCar.get(violationsByCar.size() - 1);
+
+                // Add the offencesCount of the current violation to the offencesCount of the existing violation.
+                existingViolation.setOffencesCount(existingViolation.getOffencesCount() + violation.getOffencesCount());
+            }
+
+            // If the topNumber of violations has been reached, stop the loop.
+            if (violationsCopy.size() == topNumber) {
+                break;
+            }
+        }
+
+        // Sort the new list by decreasing offencesCount.
+        violationsByCar.sort((v1, v2) -> v2.getOffencesCount() - v1.getOffencesCount());
+
+        return violationsByCar.subList(0, topNumber);
     }
 
     /**
@@ -168,16 +194,37 @@ public class TrafficTracker {
     public List<Violation> topViolationsByCity(int topNumber) {
         List<Violation> violationsCopy = this.violations;
 
+        // Sort the violationsCopy by grouping them by city. This is essential for the next step.
+        violationsCopy.sort(Comparator.comparing(Violation::getCity));
 
-        // TODO merge all violations from this.violations into a new OrderedArrayList
-        //   which orders and aggregates violations by Car
-        // TODO sort the new list by decreasing offencesCount.
-        // TODO use .subList to return only the topNumber of violations from the sorted list
-        //  (You may want to prepare/reuse a local private method for all this)
+        List<Violation> violationsByCity = new ArrayList<>();
+        for (Violation violation : violationsCopy) {
+            // If the violationsByCity list is empty or the last violation in the list does not match the current violation.
+            // If the violationsCopy has not been sorted by city, this will not work. Because the last violation in the
+            // list will not necessarily be the last violation of the city.
+            if (violationsByCity.isEmpty() || !violationsByCity.get(violationsByCity.size() - 1).getCity().equals(violation.getCity())) {
+                violationsByCity.add(new Violation(null, violation.getCity()));
 
-        return null;  // replace this reference
+                // Set the offencesCount of the new violation to the offencesCount of the current violation.
+                violationsByCity.get(violationsByCity.size() - 1).setOffencesCount(violation.getOffencesCount());
+            } else { // If the last violation in the list matches the current violation. Meaning that the city is the same.
+                Violation existingViolation = violationsByCity.get(violationsByCity.size() - 1);
+
+                // Add the offencesCount of the current violation to the offencesCount of the existing violation.
+                existingViolation.setOffencesCount(existingViolation.getOffencesCount() + violation.getOffencesCount());
+            }
+
+            // If the topNumber of violations has been reached, stop the loop.
+            if (violationsCopy.size() == topNumber) {
+                break;
+            }
+        }
+
+        // Sort the violationsByCity by decreasing offencesCount.
+        violationsByCity.sort((v1, v2) -> v2.getOffencesCount() - v1.getOffencesCount());
+
+        return violationsByCity.subList(0, topNumber);  // replace this reference
     }
-
 
     /**
      * imports a collection of items from a text file which provides one line for each item
