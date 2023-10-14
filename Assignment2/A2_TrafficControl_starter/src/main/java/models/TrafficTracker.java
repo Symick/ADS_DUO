@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 
@@ -144,13 +143,30 @@ public class TrafficTracker {
      * @param keyExtractor  a function that extracts a key from a violation
      * @return              a list of topNum items that provides the top aggregated violations
      */
-    public List<Violation> calculateTopViolations(int topNumber, Function<Violation, String> keyExtractor) {
+    public List<Violation> calculateTopViolations(int topNumber, Function<Violation, String> keyExtractor)
+            throws IndexOutOfBoundsException, IllegalArgumentException {
+        // Return an empty list if there are no violations.
+        if (this.violations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if (topNumber == 0) {
+            return new ArrayList<>();
+        } else if (topNumber < 0) {
+            throw new IllegalArgumentException("The topNumber cannot be negative.");
+        }
+
         // Create a new list of violations that aggregates the offencesCount by the specified keyExtractor.
         OrderedList<Violation> topViolations = new OrderedArrayList<>(Comparator.comparing(keyExtractor));
 
         // Merge all violations into the new list.
         for (Violation violation : this.violations) {
             topViolations.merge(violation, Violation::combineOffencesCounts);
+        }
+
+        // If the topNumber is larger than the number of violations.
+        if (topNumber > topViolations.size()) {
+            throw new IndexOutOfBoundsException("The topNumber is larger than the number of violations.");
         }
 
         // Sort the new list by decreasing offencesCount.

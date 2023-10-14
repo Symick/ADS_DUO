@@ -3,11 +3,7 @@ package models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TrafficTrackerTest2 {
     private final static String VAULT_NAME = "/2023-09";
@@ -25,13 +21,33 @@ public class TrafficTrackerTest2 {
 
     @Test
     public void topViolationsByCarCheck() {
-        // Test when violations are empty.
+        // When violations are empty.
         TrafficTracker emptyTrafficTracker = new TrafficTracker();
         assertEquals(0, emptyTrafficTracker.topViolationsByCar(5).size());
 
-        // Test when violations are smaller than the requested top size.
-        assertEquals(3, trafficTracker.topViolationsByCar(5).size());
+        // When top violations are greater than violations size.
+        assertThrows(IndexOutOfBoundsException.class, () -> trafficTracker.topViolationsByCar(100));
 
+        // When top violations are negative.
+        assertThrows(IllegalArgumentException.class, () -> trafficTracker.topViolationsByCar(-1));
 
+        assertEquals(5, trafficTracker.topViolationsByCar(5).size());
+        assertEquals(0, trafficTracker.topViolationsByCar(0).size());
+    }
+
+    @Test
+    public void topViolationsByCityCheck() {
+        // When violations are empty.
+        TrafficTracker emptyTrafficTracker = new TrafficTracker();
+        assertEquals(0, emptyTrafficTracker.topViolationsByCity(5).size());
+
+        // When top violations are greater than violations size.
+        assertThrows(IndexOutOfBoundsException.class, () -> trafficTracker.topViolationsByCity(100));
+
+        // When top violations are negative.
+        assertThrows(IllegalArgumentException.class, () -> trafficTracker.topViolationsByCity(-1));
+
+        assertEquals(5, trafficTracker.topViolationsByCity(5).size());
+        assertEquals(0, trafficTracker.topViolationsByCity(0).size());
     }
 }
