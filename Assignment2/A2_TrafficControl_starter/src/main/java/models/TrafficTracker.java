@@ -220,7 +220,9 @@ public class TrafficTracker {
 
             E item = converter.apply(line);
 
-            items.add(item);
+            if (item != null){
+                items.add(item);
+            }
         }
 
         return numberOfLines;
