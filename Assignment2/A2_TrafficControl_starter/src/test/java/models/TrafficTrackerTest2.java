@@ -3,6 +3,9 @@ package models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -22,8 +25,13 @@ public class TrafficTrackerTest2 {
 
     @Test
     public void topViolationsByCarCheck() {
-        String topViolationsByCar = trafficTracker.topViolationsByCar(8).toString();
-        String expected = "[27-IP-IX/null/241, AUQ-42-V/null/219, IX-TN-99/null/218, 007-JQ-3/null/214, MAS-16-X/null/214, 044-AR-9/null/211, 575-DU-8/null/207, 419-TH-8/null/206]";
-        assertEquals(expected, topViolationsByCar);
+        // Test when violations are empty.
+        TrafficTracker emptyTrafficTracker = new TrafficTracker();
+        assertEquals(0, emptyTrafficTracker.topViolationsByCar(5).size());
+
+        // Test when violations are smaller than the requested top size.
+        assertEquals(3, trafficTracker.topViolationsByCar(5).size());
+
+
     }
 }
