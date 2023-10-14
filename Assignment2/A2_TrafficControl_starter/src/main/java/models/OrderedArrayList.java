@@ -54,23 +54,35 @@ public class OrderedArrayList<E>
         }
     }
 
+    /**
+     * Remove the item at the current index, and if the removed item is in the sorted part of the array
+     * decrement the nSorted variable.
+     *
+     * @param index the index of the element to be removed
+     * @return
+     */
     @Override
     public E remove(int index) {
 
         E toRemove = super.remove(index);
         //decrement after super.remove is invoked if remove throws an exception nSorted is not decremented
-        nSorted-- ;
+        if (index < nSorted) {
+            nSorted--;
+        }
         return toRemove;
     }
 
     @Override
     public boolean remove(Object o) {
-        boolean isRemoved = super.remove(o);
-        // only decrement nSorted if object is really removed
-        if (isRemoved) {
-            nSorted--;
+        int index = indexOf(o);
+
+        //if the index remove is successful, then the nSorted should be decremented.
+        try {
+           this.remove(index);
+           return true;
+        } catch (IndexOutOfBoundsException ex) {
+            return false;
         }
-        return isRemoved;
     }
 
     @Override
@@ -140,8 +152,9 @@ public class OrderedArrayList<E>
 
     /**
      * Finds the position of the searchItem in the unsorted section of the arrayList by linear search.
-     * @param searchItem  The item to be searched on the basis of comparison by this.sortOrder.
-     * @return            The position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem The item to be searched on the basis of comparison by this.sortOrder.
+     * @return The position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int linearSearch(E searchItem) {
         for (int i = 0; i < this.size(); i++) {
@@ -178,10 +191,11 @@ public class OrderedArrayList<E>
 
     /**
      * Finds the position of the searchItem by a recursive binary search algorithm.
-     * @param searchItem  The item to be searched on the basis of comparison by this.sortOrder
-     * @param left        The left index of the array.
-     * @param right       The right index of the array.
-     * @return            Position index of the found item in the arrayList, or -1 if no item matches the search item.
+     *
+     * @param searchItem The item to be searched on the basis of comparison by this.sortOrder
+     * @param left       The left index of the array.
+     * @param right      The right index of the array.
+     * @return Position index of the found item in the arrayList, or -1 if no item matches the search item.
      */
     public int recursiveBinarySearch(E searchItem, int left, int right) {
         if (left > right) { // if left is greater than right, then the search item is not found.
@@ -210,13 +224,13 @@ public class OrderedArrayList<E>
      * i.e. the found match is replaced by the outcome of the merge between the match and the newItem
      * If no match is found in the list, the newItem is added to the list.
      *
-     * @param newItem  the item to be merged into the list.
-     * @param merger   a function that takes two items and returns an item that contains the merged content of
-     *                 the two items according to some merging rule.
-     *                 e.g. a merger could add the value of attribute X of the second item
-     *                 to attribute X of the first item and then return the first item
-     * @return         true if the newItem was added to the list, false if a match was found and the match was
-     *                 replaced by the outcome of the merge.
+     * @param newItem the item to be merged into the list.
+     * @param merger  a function that takes two items and returns an item that contains the merged content of
+     *                the two items according to some merging rule.
+     *                e.g. a merger could add the value of attribute X of the second item
+     *                to attribute X of the first item and then return the first item
+     * @return true if the newItem was added to the list, false if a match was found and the match was
+     * replaced by the outcome of the merge.
      */
     @Override
     public boolean merge(E newItem, BinaryOperator<E> merger) {
@@ -246,7 +260,7 @@ public class OrderedArrayList<E>
     public double aggregate(Function<E, Double> mapper) {
         double sum = 0.0;
 
-        for (E item: this) {
+        for (E item : this) {
             sum += mapper.apply(item);
         }
         return sum;
