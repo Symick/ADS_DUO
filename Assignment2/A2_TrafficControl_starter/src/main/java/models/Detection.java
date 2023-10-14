@@ -58,6 +58,7 @@ public class Detection {
             System.out.println(ex.getMessage());
             return null; //if date can't be parsed return null
         }
+
         Car tempCar = new Car(licensePlate); //temporary car to test if license plate is already in the list.
         int indexOfCar = cars.indexOf(tempCar);
 
@@ -68,7 +69,6 @@ public class Detection {
         } else {
             newDetection = new Detection(cars.get(indexOfCar), city, date);
         }
-
 
         return newDetection;
     }
@@ -84,6 +84,7 @@ public class Detection {
         final int MINIMAL_EMISSION = 6;
         Boolean isDieselTruck = car.getCarType() == CarType.Truck && car.getFuelType() == FuelType.Diesel;
         Boolean isDieselCoach = car.getCarType() == CarType.Coach && car.getFuelType() == FuelType.Diesel;
+
         if ((isDieselCoach || isDieselTruck) && car.getEmissionCategory() < MINIMAL_EMISSION) {
             return new Violation(car, city);
         }

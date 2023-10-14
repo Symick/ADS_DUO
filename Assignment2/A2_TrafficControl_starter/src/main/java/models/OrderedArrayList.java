@@ -126,6 +126,7 @@ public class OrderedArrayList<E>
         int left = 0;
         int right = nSorted - 1;
         int mid = 0;
+
         while (left <= right) {
             mid = (int) Math.floor((left + right) / 2.0);
 
@@ -143,7 +144,6 @@ public class OrderedArrayList<E>
                 // If the mid is more than the item that means that search item is positioned to the left of the current mid
                 right = mid - 1;
             }
-
         }
 
         // Use linear search to find the item in the unsorted section of the arrayList.
@@ -263,6 +263,7 @@ public class OrderedArrayList<E>
         for (E item : this) {
             sum += mapper.apply(item);
         }
+
         return sum;
     }
 }

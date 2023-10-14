@@ -15,6 +15,7 @@ public class Violation {
 
     public static int compareByLicensePlateAndCity(Violation v1, Violation v2) {
         int result = v1.car.getLicensePlate().compareTo(v2.car.getLicensePlate());
+
         if (result == 0) {
             result = v1.city.compareTo(v2.city);
         }
@@ -63,6 +64,7 @@ public class Violation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Violation violation = (Violation) o;
         return offencesCount == violation.offencesCount && car.equals(violation.getCar()) && city.equals(violation.city);
     }
