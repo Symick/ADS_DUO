@@ -139,9 +139,12 @@ public class TrafficTracker {
 
     /**
      * Calculates the top violations by the specified keyExtractor.
-     * @param topNumber     the requested top number of violations in the result list
-     * @param keyExtractor  a function that extracts a key from a violation
-     * @return              a list of topNum items that provides the top aggregated violations
+     *
+     * @param topNumber                   the requested top number of violations in the result list
+     * @param keyExtractor                a function that extracts a key from a violation
+     * @throws IndexOutOfBoundsException  if the topNumber is larger than the number of violations
+     * @throws IllegalArgumentException   if the topNumber is negative
+     * @return                            a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> calculateTopViolations(int topNumber, Function<Violation, String> keyExtractor)
             throws IndexOutOfBoundsException, IllegalArgumentException {
