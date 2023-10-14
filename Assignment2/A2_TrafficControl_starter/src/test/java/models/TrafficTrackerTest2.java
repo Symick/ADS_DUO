@@ -12,6 +12,7 @@ public class TrafficTrackerTest2 {
 
     @BeforeEach
     public void setup() {
+
         trafficTracker = new TrafficTracker();
 
         trafficTracker.importCarsFromVault(VAULT_NAME + "/cars.txt");
@@ -20,6 +21,7 @@ public class TrafficTrackerTest2 {
     }
 
     @Test
+
     public void topViolationsByCarCheck() {
         // When violations are empty.
         TrafficTracker emptyTrafficTracker = new TrafficTracker();
@@ -49,5 +51,13 @@ public class TrafficTrackerTest2 {
 
         assertEquals(5, trafficTracker.topViolationsByCity(5).size());
         assertEquals(0, trafficTracker.topViolationsByCity(0).size());
+
+    }
+    @Test
+    public void finesAggregateCorrectly() {
+        TrafficTracker emptyTrafficTracker = new TrafficTracker();
+        //empty trafficTracker should have no violation to fine.
+        assertEquals(0,  emptyTrafficTracker.calculateTotalFines());
+        assertEquals(186090, trafficTracker.calculateTotalFines());
     }
 }
