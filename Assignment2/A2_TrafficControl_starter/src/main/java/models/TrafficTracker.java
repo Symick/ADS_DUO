@@ -141,12 +141,12 @@ public class TrafficTracker {
      * Calculates the top violations by the specified keyExtractor.
      *
      * @param topNumber                   the requested top number of violations in the result list
-     * @param keyExtractor                a function that extracts a key from a violation
+     * @param comparator                  a comparator that compares violations by the specified keyExtractor
      * @throws IndexOutOfBoundsException  if the topNumber is larger than the number of violations
      * @throws IllegalArgumentException   if the topNumber is negative
      * @return                            a list of topNum items that provides the top aggregated violations
      */
-    public List<Violation> calculateTopViolations(int topNumber, Function<Violation, String> keyExtractor)
+    public List<Violation> calculateTopViolations(int topNumber, Comparator<Violation> comparator)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Return an empty list if there are no violations.
         if (this.violations.isEmpty()) {
@@ -160,7 +160,7 @@ public class TrafficTracker {
         }
 
         // Create a new list of violations that aggregates the offencesCount by the specified keyExtractor.
-        OrderedList<Violation> topViolations = new OrderedArrayList<>(Comparator.comparing(keyExtractor));
+        OrderedList<Violation> topViolations = new OrderedArrayList<>(comparator);
 
         // Merge all violations into the new list.
         for (Violation violation : this.violations) {
@@ -185,7 +185,7 @@ public class TrafficTracker {
      * @return              a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCar(int topNumber) {
-         return calculateTopViolations(topNumber, violation -> violation.getCar().getLicensePlate());
+         return calculateTopViolations(topNumber, Comparator.comparing(Violation::getCar));
     }
 
     /**
@@ -195,7 +195,7 @@ public class TrafficTracker {
      * @return              a list of topNum items that provides the top aggregated violations
      */
     public List<Violation> topViolationsByCity(int topNumber) {
-        return calculateTopViolations(topNumber, Violation::getCity);
+        return calculateTopViolations(topNumber, Comparator.comparing(Violation::getCity));
     }
 
     /**
