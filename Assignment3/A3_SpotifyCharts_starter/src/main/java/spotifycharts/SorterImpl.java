@@ -3,6 +3,7 @@ package spotifycharts;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class SorterImpl<E> implements Sorter<E> {
 
@@ -32,13 +33,77 @@ public class SorterImpl<E> implements Sorter<E> {
      * @return  the items sorted in place
      */
     public List<E> quickSort(List<E> items, Comparator<E> comparator) {
-        // TODO provide a recursive quickSort implementation,
-        //  that is different from the example given in the lecture
-
-
-
+        quickSort(items, comparator, 0, items.size() - 1);
         return items;   // replace as you find appropriate
     }
+
+    /**
+     * Private helper function for the quickSort sorting algorithm
+     *
+     * @param items a list of items
+     * @param comparator a comparator to determine how the list should be sorted
+     * @param low the lowest index of the subarray which is partitioned
+     * @param high the highest index of the subarray which is partitioned
+     *
+     * based on <a href="https://www.programiz.com/dsa/quick-sort#google_vignette">quicksort pseudocode</a>
+     */
+    private void quickSort(List<E> items, Comparator<E> comparator, int low, int high) {
+        if (low < high) {
+            int partition =  partition(items, comparator, low, high);
+
+            //sort left subarray
+            quickSort(items, comparator, low, partition -1);
+            //sort right subarray
+            quickSort(items, comparator, partition + 1, high);
+        }
+    }
+
+    /**
+     * Set one item of the list as the pivot. All items lower than the pivot are set to the left
+     * and all items higher than the pivot are set to the right of the pivot.
+     * Making sure the pivot is at the correct spot in the list
+     * @param items a list of items
+     * @param comparator a comparator to determine how the list should be sorted
+     * @param low the lowest index of the subarray which is partitioned
+     * @param high the highest index of the subarray which is partitioned
+     * @return the correct index of the pivot in the sorted array
+     */
+    private int partition(List<E> items, Comparator<E> comparator, int low, int high) {
+        //get random pivot
+        Random random = new Random();
+        int randomPivot = random.nextInt(high - low + 1) + low;
+        //swap random pivot with high
+        swap(items, randomPivot, high);
+
+        //get new pivot
+        E pivot = items.get(high);
+        int i = low; //location of elements smaller then pivot
+        for (int j = low; j < high; j++) {
+            if (comparator.compare(items.get(j), pivot) <= 0) {
+                //swap current item to the left of the pivot
+                swap(items, i, j);
+                i++;
+            }
+        }
+        //set the pivot to the correct spot
+        swap(items, i, high);
+        return i;
+    }
+
+    /**
+     * Swap to items in a list
+     * @param items a list of items
+     * @param index1 the index of the first item
+     * @param index2 the index of the second
+     */
+    private void swap(List<E> items, int index1, int index2) {
+        E item1 = items.get(index1);
+        E item2 = items.get(index2);
+        items.set(index1, item2);
+        items.set(index2, item1);
+    }
+
+
 
     /**
      * Identifies the lead collection of numTops items according to the ordening criteria of comparator
