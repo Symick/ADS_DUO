@@ -46,6 +46,8 @@ public class SorterImpl<E> implements Sorter<E> {
      * @param high the highest index of the subarray which is partitioned
      *
      * based on <a href="https://www.programiz.com/dsa/quick-sort#google_vignette">quicksort pseudocode</a>
+     * made some adjustments to the implementation to randomize the pivot each time
+     * this reduces the change of quicksort running in its worst-possible scenario
      */
     private void quickSort(List<E> items, Comparator<E> comparator, int low, int high) {
         if (low < high) {
@@ -102,8 +104,6 @@ public class SorterImpl<E> implements Sorter<E> {
         items.set(index1, item2);
         items.set(index2, item1);
     }
-
-
 
     /**
      * Identifies the lead collection of numTops items according to the ordening criteria of comparator
