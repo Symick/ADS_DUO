@@ -69,10 +69,13 @@ public class SorterImpl<E> implements Sorter<E> {
      * @param low the lowest index of the subarray which is partitioned
      * @param high the highest index of the subarray which is partitioned
      * @return the correct index of the pivot in the sorted array
+     *
+     * this function is protected, so it can be checked in a unit test.
      */
-    private int partition(List<E> items, Comparator<E> comparator, int low, int high) {
+    protected int partition(List<E> items, Comparator<E> comparator, int low, int high) {
+        long seed = 121247;
         //get random pivot
-        Random random = new Random();
+        Random random = new Random(seed);
         int randomPivot = random.nextInt(high - low + 1) + low;
         //swap random pivot with high
         swap(items, randomPivot, high);
