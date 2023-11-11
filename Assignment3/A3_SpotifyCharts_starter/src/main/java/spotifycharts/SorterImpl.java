@@ -126,8 +126,8 @@ public class SorterImpl<E> implements Sorter<E> {
      * The remaining items are kept in the tail of the list, in arbitrary order.
      * Items are sorted 'in place' without use of an auxiliary list or array or other positions in items
      * @param numTops       the size of the lead collection of items to be found and sorted
-     * @param items
-     * @param comparator
+     * @param items         the items to be sorted
+     * @param comparator    the comparator to decide relative ordening
      * @return              the items list with its first numTops items sorted according to comparator
      *                      all other items >= any item in the lead collection
      */
@@ -170,16 +170,11 @@ public class SorterImpl<E> implements Sorter<E> {
             // position 0 holds the root item of a heap of size i+1 organised by reverseComparator
             // this root item is the worst item of the remaining front part of the lead collection
 
-            // TODO swap item[0] and item[i];
-            //  this moves item[0] to its designated position
+            // Swap root with the last item.
+            swap(items, 0, i);
 
-
-
-            // TODO the new root may have violated the heap condition
-            //  repair the heap condition on the remaining heap of size i
-
-
-
+            // Repair the heap condition of the remaining items.
+            heapSink(items, i, reverseComparator);
         }
 
         return items;
@@ -191,16 +186,18 @@ public class SorterImpl<E> implements Sorter<E> {
      * The zero-bases heap condition says:
      *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
-     * @param items
-     * @param heapSize
-     * @param comparator
+     * @param items       the items to be sorted
+     * @param heapSize    the size of the heap
+     * @param comparator  the comparator to decide relative ordening
      */
     protected void heapSwim(List<E> items, int heapSize, Comparator<E> comparator) {
-        // TODO swim items[heapSize-1] up the heap until
-        //      i==0 || items[(i-1]/2] <= items[i]
+        int i = heapSize - 1; // Index of the item that is being swum up the heap.
 
-
-
+        // Move items of arr[0..i-1], that are greater than key, to one position ahead of their current position.
+        while (i > 0 && comparator.compare(items.get((i - 1) / 2), items.get(i)) > 0) {
+            swap(items, i, (i - 1) / 2); // Move the item one position ahead.
+            i = (i - 1) / 2; // Move the index one position back.
+        }
     }
     /**
      * Repairs the zero-based heap condition for its root items[0] on the basis of the comparator
@@ -208,15 +205,26 @@ public class SorterImpl<E> implements Sorter<E> {
      * The zero-bases heap condition says:
      *                      all items[i] <= items[2*i+1] and items[i] <= items[2*i+2], if any
      * or equivalently:     all items[i] >= items[(i-1)/2]
-     * @param items
-     * @param heapSize
-     * @param comparator
+     * @param items       the items to be sorted
+     * @param heapSize    the size of the heap
+     * @param comparator  the comparator to decide relative ordening
      */
     protected void heapSink(List<E> items, int heapSize, Comparator<E> comparator) {
-        // TODO sink items[0] down the heap until
-        //      2*i+1>=heapSize || (items[i] <= items[2*i+1] && items[i] <= items[2*i+2])
+        int i = 0; // Index of the item that is being sunk down the heap.
 
+        // Move items of arr[0..i-1], that are greater than key, to one position ahead of their current position.
+        while (2 * i + 1 < heapSize) {
+            int j = 2 * i + 1; // Index of the left child of i.
+            if (j < heapSize - 1 && comparator.compare(items.get(j), items.get(j + 1)) > 0) {
+                j++; // Index of the right child of i.
+            }
 
+            if (comparator.compare(items.get(i), items.get(j)) <= 0) {
+                break; // The heap condition is satisfied.
+            }
 
+            swap(items, i, j); // Swap the item with its smallest child.
+            i = j; // Move the index one position down.
+        }
     }
 }
