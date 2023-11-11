@@ -11,15 +11,26 @@ public class SorterImpl<E> implements Sorter<E> {
      * Sorts all items by selection or insertion sort using the provided comparator
      * for deciding relative ordening of two items
      * Items are sorted 'in place' without use of an auxiliary list or array
-     * @param items
-     * @param comparator
+     * @param items       the items to be sorted
+     * @param comparator  the comparator to decide relative ordening
      * @return  the items sorted in place
      */
     public List<E> selInsBubSort(List<E> items, Comparator<E> comparator) {
-        // TODO implement selection sort or insertion sort or bubble sort
+        int n = items.size();
 
+        // Chose selection sort because it is the most efficient of the three.
+        for (int i = 1; i < n; i++) {
+            E key = items.get(i);
+            int j = i - 1; // Index of the item before the key.
 
+            // Move items of arr[0..i-1], that are greater than key, to one position ahead of their current position.
+            while (j >= 0 && comparator.compare(items.get(j), key) > 0) {
+                items.set(j + 1, items.get(j)); // Move the item one position ahead.
+                j = j - 1; // Move the index one position back.
+            }
 
+            items.set(j + 1, key); // Insert the key at the correct position in the sorted array.
+        }
 
         return items;   // replace as you find appropriate
     }
