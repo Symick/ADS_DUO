@@ -11,7 +11,7 @@ import java.util.List;
 public class EfficiencyTest {
     private final int ITERATIONS = 10;
     private final int MAX_TIME = 20_000; // 20 seconds in milliseconds
-    private final int BIGGEST_INPUT_SIZE = 5_000_000;
+    private final int BIGGEST_INPUT_SIZE = 10000;
     private final double NANO_TO_MILLI = 1E-6;
 
     long started;
@@ -19,7 +19,7 @@ public class EfficiencyTest {
     private SongSorter songSorter;
     private Comparator<Song> rankingScheme = Song::compareByHighestStreamsCountTotal;
     //set up table
-    private EfficiencyTable<Double> results = new EfficiencyTable<>(4, 23, Double::sum, (a, b) -> a * b);
+    private EfficiencyTable<Double> results = new EfficiencyTable<>(5, 23, Double::sum, (a, b) -> a * b);
 
     private List<Song> toBeSorted;
 
@@ -33,7 +33,8 @@ public class EfficiencyTest {
         for (int i = 1; i <= ITERATIONS; i++) {
             System.out.println("this is iteration -" + i);
             //set up list
-            ChartsCalculator charts = new ChartsCalculator(i);
+
+
 
             //keeps track of last duration, so after it takes longer than 20 seconds you can stop executing
             double lastBubSelIntDuration = 0;
@@ -42,14 +43,14 @@ public class EfficiencyTest {
 
 
             //loop over all input sizes and track on which row you are.
-            for (int n = 100, row = 0; n < BIGGEST_INPUT_SIZE; n *= 2, row++) {
-
+            for (int n = 100, row = 0; n < BIGGEST_INPUT_SIZE; n = n * 2, row++) {
                 //break out of iteration if all sorting algoritmes take longer than 20 seconds
                 if (lastQuickDuration >= MAX_TIME && lastBubSelIntDuration >= MAX_TIME && lastTopHeapDuration >= MAX_TIME) break;
 
 
                 //setup list with n size
-                List<Song> songs = charts.registerStreamedSongs(n);
+                ChartsCalculator charts = new ChartsCalculator(i);
+                 List<Song> songs = charts.registerStreamedSongs(n);
                 //add the n column
                 results.add(0, row, (double) n);
 
@@ -64,7 +65,9 @@ public class EfficiencyTest {
                     results.add(1, row, lastBubSelIntDuration);
                 }
 
+
                 //quicksort
+                toBeSorted.clear();
                 toBeSorted = new ArrayList<>(songs);
                 System.gc();
                 if (lastQuickDuration <= MAX_TIME) {
@@ -75,6 +78,7 @@ public class EfficiencyTest {
                 }
 
                 //heapsort
+                toBeSorted.clear();
                 toBeSorted = new ArrayList<>(songs);
                 System.gc();
                 if (lastTopHeapDuration <= MAX_TIME) {
@@ -83,6 +87,16 @@ public class EfficiencyTest {
                     lastTopHeapDuration = NANO_TO_MILLI * (System.nanoTime() - started);
                     results.add(3, row, lastTopHeapDuration);
                 }
+
+                toBeSorted = new ArrayList<>(songs);
+                System.gc();
+                System.out.println(toBeSorted.subList(0,5));
+                System.out.println(toBeSorted.size());
+                started = System.nanoTime();
+                toBeSorted.sort(rankingScheme);
+                double duration = NANO_TO_MILLI * (System.nanoTime() - started);
+                System.out.printf("duration was %.2f msec \n", duration);
+                results.add(4, row, duration);
             }
         }
 
