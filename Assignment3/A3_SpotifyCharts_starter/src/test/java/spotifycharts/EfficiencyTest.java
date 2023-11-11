@@ -11,7 +11,7 @@ import java.util.List;
 public class EfficiencyTest {
     private final int ITERATIONS = 10;
     private final int MAX_TIME = 20_000; // 20 seconds in milliseconds
-    private final int BIGGEST_INPUT_SIZE = 10000;
+    private final int BIGGEST_INPUT_SIZE = 5_000_000;
     private final double NANO_TO_MILLI = 1E-6;
 
     long started;
@@ -19,7 +19,7 @@ public class EfficiencyTest {
     private SongSorter songSorter;
     private Comparator<Song> rankingScheme = Song::compareByHighestStreamsCountTotal;
     //set up table
-    private EfficiencyTable<Double> results = new EfficiencyTable<>(5, 23, Double::sum, (a, b) -> a * b);
+    private EfficiencyTable<Double> results = new EfficiencyTable<>(4, 23, Double::sum, (a, b) -> a * b);
 
     private List<Song> toBeSorted;
 
@@ -83,20 +83,10 @@ public class EfficiencyTest {
                 System.gc();
                 if (lastTopHeapDuration <= MAX_TIME) {
                     started = System.nanoTime();
-                    songSorter.topsHeapSort(100, toBeSorted, rankingScheme);
+                    songSorter.topsHeapSort(toBeSorted.size(), toBeSorted, rankingScheme);
                     lastTopHeapDuration = NANO_TO_MILLI * (System.nanoTime() - started);
                     results.add(3, row, lastTopHeapDuration);
                 }
-
-                toBeSorted = new ArrayList<>(songs);
-                System.gc();
-                System.out.println(toBeSorted.subList(0,5));
-                System.out.println(toBeSorted.size());
-                started = System.nanoTime();
-                toBeSorted.sort(rankingScheme);
-                double duration = NANO_TO_MILLI * (System.nanoTime() - started);
-                System.out.printf("duration was %.2f msec \n", duration);
-                results.add(4, row, duration);
             }
         }
 
