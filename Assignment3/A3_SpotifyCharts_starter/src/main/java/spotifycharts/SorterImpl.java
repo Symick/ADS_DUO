@@ -95,6 +95,11 @@ public class SorterImpl<E> implements Sorter<E> {
         //get new pivot
         E pivot = items.get(high);
         int i = low; //location of elements smaller then pivot
+
+        /*
+            loop-invariant: All items in the subarray [low: i -1] are smaller than the pivot and all items in the subarray
+            [i: j -1] are greater than the pivot.
+         */
         for (int j = low; j < high; j++) {
             if (comparator.compare(items.get(j), pivot) <= 0) {
                 //swap current item to the left of the pivot
