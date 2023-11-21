@@ -38,15 +38,10 @@ public class Candidate {
      * @return
      */
     public static String fullName(String firstName, String lastNamePrefix, String lastName) {
-        // every candidate shall have a last name
-        String fullName = lastName;
-
-        // TODO prepend optional lastNamePrefix and optional firstName
-        //  to compose a unique and nicely formatted full name
-
-
-
-        return fullName;
+        return String.format("%s%s%s",
+                firstName != null ? firstName.concat(" ") : "",
+                lastNamePrefix != null ? lastNamePrefix.concat(" ") : "",
+                lastName);
     }
 
     public String getFullName() {
@@ -67,19 +62,12 @@ public class Candidate {
         if (!(o instanceof Candidate)) return false;
         Candidate other = (Candidate) o;
 
-        // TODO provide the equality criterion to identify unique candidate instances
-        //  hint: every candidate shall have a unique full name within his/her party.
-
-
-        return false; // replace by a proper outcome
+        return this.party.equals(other.party) && this.getFullName().equals(other.getFullName()); // replace by a proper outcome
     }
 
     @Override
     public int hashCode() {
-        // TODO provide a hashCode that is consistent with above equality criterion
-
-
-        return 0; // replace by a proper outcome
+        return Objects.hash(party, getFullName()); // replace by a proper outcome
     }
 
     public String getFirstName() {

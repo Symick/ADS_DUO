@@ -42,5 +42,6 @@ class CandidateTest {
                 "Did you implement a proper hashCode aligned with the candidate-equality criterion?");
         assertEquals(this.candidate21.hashCode(), this.candidate21a.hashCode(),
                 "Candidates are uniquely defined by party-id and candidate-fullname");
+        assertNotEquals(this.candidate11.hashCode(), this.candidate21.hashCode());
     }
 }
