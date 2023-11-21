@@ -23,7 +23,8 @@ public class SorterImpl<E> implements Sorter<E> {
             E key = items.get(i);
             int j = i - 1; // Index of the item before the key.
 
-            // Move items of arr[0..i-1], that are greater than key, to one position ahead of their current position.
+            // Move items of arr[0..i-1], that are greater than key, to one position
+            // ahead of their current position.
             while (j >= 0 && comparator.compare(items.get(j), key) > 0) {
                 items.set(j + 1, items.get(j)); // Move the item one position ahead.
                 j = j - 1; // Move the index one position back.
@@ -32,7 +33,7 @@ public class SorterImpl<E> implements Sorter<E> {
             items.set(j + 1, key); // Insert the key at the correct position in the sorted array.
         }
 
-        return items;   // replace as you find appropriate
+        return items;
     }
 
     /**
@@ -138,42 +139,39 @@ public class SorterImpl<E> implements Sorter<E> {
      */
     public List<E> topsHeapSort(int numTops, List<E> items, Comparator<E> comparator) {
 
-        // the lead collection of numTops items will be organised into a (zero-based) heap structure
-        // in the first numTops list positions using the reverseComparator for the heap condition.
-        // that way the root of the heap will contain the worst item of the lead collection
-        // which can be compared easily against other candidates from the remainder of the list
+        // Create a reverse comparator to build a max-heap.
         Comparator<E> reverseComparator = comparator.reversed();
 
-        // initialise the lead collection with the first numTops items in the list
+        // Build a max-heap of the first numTops items.
         for (int heapSize = 2; heapSize <= numTops; heapSize++) {
-            // repair the heap condition of items[0..heapSize-2] to include new item items[heapSize-1]
+            // Repair the heap condition of items[0..heapSize-2] to include new item items[heapSize-1]
             heapSwim(items, heapSize, reverseComparator);
         }
 
-        // insert remaining items into the lead collection as appropriate
+        // Insert remaining items into the lead collection as appropriate.
         for (int i = numTops; i < items.size(); i++) {
-            // loop-invariant: items[0..numTops-1] represents the current lead collection in a heap data structure
-            //  the root of the heap is the currently trailing item in the lead collection,
-            //  which will lose its membership if a better item is found from position i onwards
+            // Loop-invariant: items[0..numTops-1] represents the current lead collection in a heap data structure.
+            // The root of the heap is the currently trailing item in the lead collection,
+            // which will lose its membership if a better item is found from position i onwards
             E item = items.get(i);
             E worstLeadItem = items.get(0);
             if (comparator.compare(item, worstLeadItem) < 0) {
-                // item < worstLeadItem, so shall be included in the lead collection
+                // Item < worstLeadItem, so shall be included in the lead collection.
                 items.set(0, item);
-                // demote worstLeadItem back to the tail collection, at the orginal position of item
+                // Demote worstLeadItem back to the tail collection, at the original position of item.
                 items.set(i, worstLeadItem);
-                // repair the heap condition of the lead collection
+                // Repair the heap condition of the lead collection.
                 heapSink(items, numTops, reverseComparator);
             }
         }
 
-        // the first numTops positions of the list now contain the lead collection
-        // the reverseComparator heap condition applies to this lead collection
-        // now use heapSort to realise full ordening of this collection
+        // The first numTops positions of the list now contain the lead collection.
+        // The reverseComparator heap condition applies to this lead collection.
+        // Now use heapSort to realise full ordening of this collection.
         for (int i = numTops-1; i > 0; i--) {
-            // loop-invariant: items[i+1..numTops-1] contains the tail part of the sorted lead collection
-            // position 0 holds the root item of a heap of size i+1 organised by reverseComparator
-            // this root item is the worst item of the remaining front part of the lead collection
+            // Loop-invariant: items[i+1..numTops-1] contains the tail part of the sorted lead collection.
+            // Position 0 holds the root item of a heap of size i+1 organised by reverseComparator.
+            // This root item is the worst item of the remaining front part of the lead collection.
 
             // Swap root with the last item.
             swap(items, 0, i);
