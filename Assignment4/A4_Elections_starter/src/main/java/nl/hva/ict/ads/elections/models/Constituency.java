@@ -118,12 +118,10 @@ public class Constituency {
      * @return      the sub set of polling stations within the specified zipCode range
      */
     public NavigableSet<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
-        // TODO: return all polling stations that have been registered at this constituency
-        //  hint: there is no need to build a new collection; just return what you have got...
-        pollingStations.stream()
-                .filter()
-
-        return null; // replace by a proper outcome
+        return pollingStations.stream()
+                .filter(p -> p.getZipCode().compareTo(firstZipCode) >= 0)
+                .filter(p -> p.getZipCode().compareTo(lastZipCode) <= 0)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /**
@@ -132,10 +130,14 @@ public class Constituency {
      * @return
      */
     public Map<Party,Integer> getVotesByParty() {
+        Map<Party, Integer> votesPerParty = new HashMap<>();
         // TODO prepare a map of total number of votes per party
+        for (PollingStation pollingStation : pollingStations) {
+            pollingStation.getVotesByParty()
+                    .forEach((party, votes) -> votesPerParty.merge(party, votes, Integer::sum));
+        }
 
-
-        return null; // replace by a proper outcome
+        return votesPerParty; // replace by a proper outcome
     }
 
     /**
