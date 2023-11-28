@@ -38,9 +38,8 @@ public class Constituency {
         this.id = id;
         this.name = name;
 
-        // TODO initialise this.rankedCandidatesByParty with an appropriate Map implementation
-        //  and this.pollingStations with an appropriate Set implementation organised by zipCode and Id
-
+        this.rankedCandidatesByParty = new HashMap<>();
+        this.pollingStations = new TreeSet<>(Comparator.comparing(PollingStation::getZipCode).thenComparing(PollingStation::getId));
 
     }
 
@@ -54,11 +53,22 @@ public class Constituency {
      * @return whether the registration has succeeded
      */
     public boolean register(int rank, Candidate candidate) {
-        // TODO  register the candidate in this constituency for his/her party at the given rank (ballot position)
-        //  hint1: first check if a map of registered candidates already exist for the party of the given candidate
-        //        then add the candidate to that map, if the candidate has not been registered before.
+        NavigableMap<Integer, Candidate> partyCandidates = rankedCandidatesByParty.getOrDefault(candidate.getParty(), null);
 
-        return false;    // replace by a proper outcome
+        //initialise new map if no value exist
+        if (partyCandidates == null) {
+            partyCandidates = new TreeMap<>();
+            partyCandidates.put(rank, candidate);
+            rankedCandidatesByParty.put(candidate.getParty(), partyCandidates);
+            return true;
+        }
+
+        if (partyCandidates.containsKey(rank)) return false;
+        if (partyCandidates.containsValue(candidate)) return false;
+
+        partyCandidates.put(rank, candidate);
+
+        return true;    // replace by a proper outcome
     }
 
     /**
@@ -66,12 +76,7 @@ public class Constituency {
      * @return
      */
     public Collection<Party> getParties() {
-        // TODO: return all parties that have been registered at this constituency
-        //  hint: there is no need to build a new collection; just return what you have got...
-
-
-
-        return null;    // replace by a proper outcome
+        return rankedCandidatesByParty.keySet();    // replace by a proper outcome
     }
 
     /**
@@ -81,10 +86,7 @@ public class Constituency {
      * @return
      */
     public Candidate getCandidate(Party party, int rank) {
-        // TODO: return the candidate at the given rank in the given party
-
-
-        return null;    // replace by a proper outcome
+        return rankedCandidatesByParty.get(party).get(rank);    // replace by a proper outcome
     }
 
     /**
@@ -93,12 +95,7 @@ public class Constituency {
      * @return
      */
     public final List<Candidate> getCandidates(Party party) {
-        // TODO: return a list with all registered candidates of a given party in order of their rank
-        //  hint: if the implementation classes of rankedCandidatesByParty are well chosen, this only takes one line of code
-        //  hint: the resulting list may be immutable at your choice of implementation.
-
-
-        return null; // replace by a proper outcome
+       return rankedCandidatesByParty.get(party).values().stream().toList();
     }
 
     /**
@@ -107,11 +104,9 @@ public class Constituency {
      * @return the set of all candidates in this Constituency.
      */
     public Set<Candidate> getAllCandidates() {
-        // TODO collect all candidates of all parties of this Constituency into a Set.
-        //  hint: flatMap may help...
-
-
-        return null;    // replace by a proper outcome
+        return rankedCandidatesByParty.values().stream()
+                .flatMap(rankedCandidates -> rankedCandidates.values().stream())
+                .collect(Collectors.toSet());    // replace by a proper outcome
     }
 
     /**
@@ -125,7 +120,8 @@ public class Constituency {
     public NavigableSet<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
         // TODO: return all polling stations that have been registered at this constituency
         //  hint: there is no need to build a new collection; just return what you have got...
-
+        pollingStations.stream()
+                .filter()
 
         return null; // replace by a proper outcome
     }

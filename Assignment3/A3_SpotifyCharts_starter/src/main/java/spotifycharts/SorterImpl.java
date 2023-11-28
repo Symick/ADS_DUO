@@ -18,7 +18,7 @@ public class SorterImpl<E> implements Sorter<E> {
     public List<E> selInsBubSort(List<E> items, Comparator<E> comparator) {
         int n = items.size();
 
-        // Chose selection sort because it is the most efficient of the three.
+        // Chose insertion sort because it is the most efficient of the three.
         for (int i = 1; i < n; i++) {
             E key = items.get(i);
             int j = i - 1; // Index of the item before the key.
