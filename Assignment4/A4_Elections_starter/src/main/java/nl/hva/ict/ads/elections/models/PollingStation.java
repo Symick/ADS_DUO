@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.summingInt;
+
 /**
  * A polling station counts the number of votes cast at the polling station for each candidate in the constituency
  * Each polling station has an Id, but multiple vote counts can be submitted for the same polling station
@@ -30,7 +32,7 @@ public class PollingStation implements Comparable<PollingStation> {
         this.zipCode = zipCode;
         this.name = name;
 
-        // TODO initialise this.votesByCandidate with an appropriate Map implementation
+        this.votesByCandidate = new HashMap<>();
 
 
 
@@ -42,11 +44,7 @@ public class PollingStation implements Comparable<PollingStation> {
      * @param numberOfVotes
      */
     public void addVotes(Candidate candidate, int numberOfVotes) {
-        // TODO add the number of votes for the candidate
-        //   hint: the best quality solution used one line of code...
-
-
-
+        votesByCandidate.merge(candidate, numberOfVotes, Integer::sum);
     }
 
     public int getVotes(Candidate candidate) {
@@ -58,10 +56,11 @@ public class PollingStation implements Comparable<PollingStation> {
      * @return the total number of votes in this polling station per party.
      */
     public Map<Party, Integer> getVotesByParty() {
-        // TODO accumulate the votes per candidate into a map of total vote counts by party
-
-
-        return null; // replace by a proper outcome
+        return votesByCandidate.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        entry -> entry.getKey().getParty(), //map the key
+                        Collectors.summingInt(Map.Entry::getValue) //map the value, which is the sum of all values of the map entries
+                ));
     }
 
     /**

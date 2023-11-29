@@ -130,14 +130,12 @@ public class Constituency {
      * @return
      */
     public Map<Party,Integer> getVotesByParty() {
-        Map<Party, Integer> votesPerParty = new HashMap<>();
-        // TODO prepare a map of total number of votes per party
-        for (PollingStation pollingStation : pollingStations) {
-            pollingStation.getVotesByParty()
-                    .forEach((party, votes) -> votesPerParty.merge(party, votes, Integer::sum));
-        }
-
-        return votesPerParty; // replace by a proper outcome
+        return pollingStations.stream()
+                .flatMap(pollingStation -> pollingStation.getVotesByParty().entrySet().stream())
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.summingInt(Map.Entry::getValue)
+                ));
     }
 
     /**
