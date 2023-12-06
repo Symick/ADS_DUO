@@ -29,8 +29,8 @@ public class Election {
     public Election(String name) {
         this.name = name;
 
-        // TODO initialise this.parties and this.constituencies with an appropriate Map implementations
-
+        this.parties = new HashMap<>();
+        this.constituencies = new HashSet<>();
 
 
     }
@@ -40,11 +40,7 @@ public class Election {
      * @return all parties participating in at least one constituency, without duplicates
      */
     public Collection<Party> getParties() {
-        // TODO: return all parties that have been registered for the election
-        //  hint: there is no need to build a new collection; just return what you have got...
-
-
-        return null; // replace by a proper outcome
+        return parties.values(); // replace by a proper outcome
     }
 
     /**
@@ -53,10 +49,7 @@ public class Election {
      * @return  the party with given id, or null if no such party exists.
      */
     public Party getParty(int id) {
-        // TODO find the party with the given id
-
-
-        return null; // replace by a proper outcome
+        return parties.getOrDefault(id, null); // replace by a proper outcome
     }
 
     public Set<? extends Constituency> getConstituencies() {
@@ -69,10 +62,7 @@ public class Election {
      * @return alle unique candidates organised by increasing party-id
      */
     public List<Candidate> getAllCandidates() {
-        // TODO find all candidates organised by increasing party-id
-
-
-        return null; // replace by a proper outcome
+        return getParties().stream().flatMap(party -> party.getCandidates().stream()).toList(); // replace by a proper outcome
     }
 
     /**
