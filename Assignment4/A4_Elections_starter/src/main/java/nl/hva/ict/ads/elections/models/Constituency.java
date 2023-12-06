@@ -118,11 +118,12 @@ public class Constituency {
      * @return      the sub set of polling stations within the specified zipCode range
      */
     public NavigableSet<PollingStation> getPollingStationsByZipCodeRange(String firstZipCode, String lastZipCode) {
-        return pollingStations.stream()
-                .filter(p -> p.getZipCode().compareTo(firstZipCode) >= 0)
-                .filter(p -> p.getZipCode().compareTo(lastZipCode) <= 0)
-                .collect(Collectors.toCollection(TreeSet::new));
+        //polling station first compares with zipcode, so if zipcodes are the same subset should recognise endpoint
+        return pollingStations.subSet(
+                new PollingStation(null, firstZipCode, null), true,
+                new PollingStation(null, lastZipCode, null), true);
     }
+
 
     /**
      * Provides a map of total number of votes per party in this constituency
