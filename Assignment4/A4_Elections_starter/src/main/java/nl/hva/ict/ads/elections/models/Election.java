@@ -211,8 +211,8 @@ public class Election {
 
     /**
      * auxiliary method to calculate the total sum of a collection of integers
-     * @param integers
-     * @return
+     * @param integers the collection of integers
+     * @return the sum of all integers in the collection
      */
     public static int integersSum(Collection<Integer> integers) {
         return integers.stream().reduce(Integer::sum).orElse(0);
@@ -220,46 +220,41 @@ public class Election {
 
 
     public String prepareSummary(int partyId) {
-
         Party party = this.getParty(partyId);
+
+        if (party == null) {
+            return "Party with id " + partyId + " not found";
+        }
+
         StringBuilder summary = new StringBuilder()
-                .append("\nSummary of ").append(party).append(":\n");
-
-        // TODO report total number of candidates in the given party
-        // TODO report the list with all candidates in the given party
-        // TODO report total number of registrations for the given party
-        // TODO report the map of number of registrations by constituency for the given party
-
-
-
-
-
+                .append("\nSummary of ").append(party).append(":\n")
+                .append("Total number of candidates = ").append(party.getCandidates().size())
+                .append("\nCandidates: ").append(party.getCandidates())
+                .append("\nTotal number of registrations = ").append(this.constituencies.stream().mapToInt(constituency -> constituency.getCandidates(party).size()).sum())
+                .append("\nNumber of registrations by constituency: ").append(numberOfRegistrationsByConstituency(party));
 
         return summary.toString();
     }
 
     public String prepareSummary() {
-
         StringBuilder summary = new StringBuilder()
-                .append("\nElection summary of ").append(this.name).append(":\n");
-
-        // TODO report the total number of parties in the election
-        // TODO report the list of all parties ordered by increasing party-Id
-        // TODO report the total number of constituencies in the election
-        // TODO report the total number of polling stations in the election
-        // TODO report the total number of (different) candidates in the election
-        // TODO report the list with all candidates which have a counter part with a duplicate name in a different party
-
-        // TODO report the sorted list of overall election results ordered by decreasing party percentage
-        // TODO report the polling stations within the Amsterdam Wibautstraat area with zipcodes between 1091AA and 1091ZZ
-        // TODO report the top 10 sorted election results within the Amsterdam Wibautstraat area
-        //   with zipcodes between 1091AA and 1091ZZ ordered by decreasing party percentage
-        // TODO report the most representative polling station across the election
-        // TODO report the sorted election results by decreasing party percentage of the most representative polling station
-
-
-
-
+                .append("\nElection summary of ").append(this.name).append(":\n\n")
+                .append(this.getParties().size()).append(" Participating parties:\n")
+                .append(this.getParties().stream().sorted(Comparator.comparingInt(Party::getId)).toList()).append("\n")
+                .append("Total number of constituencies = ").append(this.getConstituencies().size()).append("\n")
+                .append("Total number of polling stations = ").append(this.getConstituencies().stream().mapToInt(constituency -> constituency.getPollingStations().size()).sum()).append("\n")
+                .append("Total number of candidates = ").append(this.getAllCandidates().size()).append("\n")
+                .append("Different candidates with duplicate names across different parties are:\n")
+                .append(this.getCandidatesWithDuplicateNames()).append("\n\n")
+                .append("Overall election results by party percentage:\n")
+                .append(sortedElectionResultsByPartyPercentage(this.getParties().size(), this.getVotesByParty())).append("\n")
+                .append("\nPolling stations in Amsterdam Wibautstraat area with zip codes 1091AA-1091ZZ:\n")
+                .append(this.getPollingStationsByZipCodeRange("1091AA", "1091ZZ")).append("\n")
+                .append("Top 10 election results by party percentage in Amsterdam area with zip codes 1091AA-1091ZZ:\n")
+                .append(sortedElectionResultsByPartyPercentage(10, this.getVotesByPartyAcrossPollingStations(this.getPollingStationsByZipCodeRange("1091AA", "1091ZZ")))).append("\n")
+                .append("Most representative polling station is:\n")
+                .append(this.findMostRepresentativePollingStation()).append("\n")
+                .append(sortedElectionResultsByPartyPercentage(this.getParties().size(), this.findMostRepresentativePollingStation().getVotesByParty()));
 
         return summary.toString();
     }

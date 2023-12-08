@@ -33,7 +33,10 @@ public class ElectionsMain {
 
         final int randomPartyId = 1 + (int)Math.floor(Math.random() * election.getParties().size());
 
+//        System.out.println(election.prepareSummary());
+//        System.out.println(election.prepareSummary(VOLT_PARTY_ID));
+
         System.out.println(election.prepareSummary());
-        System.out.println(election.prepareSummary(VOLT_PARTY_ID));
+        System.out.println(election.prepareSummary(randomPartyId));
     }
 }

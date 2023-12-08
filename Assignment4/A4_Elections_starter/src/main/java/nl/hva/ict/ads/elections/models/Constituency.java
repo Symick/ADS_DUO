@@ -95,6 +95,12 @@ public class Constituency {
      * @return
      */
     public final List<Candidate> getCandidates(Party party) {
+        // Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.NavigableMap.values()" because the return value of "java.util.Map.get(Object)" is null
+
+        if (rankedCandidatesByParty.get(party) == null) {
+            return new ArrayList<>();
+        }
+
        return rankedCandidatesByParty.get(party).values().stream().toList();
     }
 
