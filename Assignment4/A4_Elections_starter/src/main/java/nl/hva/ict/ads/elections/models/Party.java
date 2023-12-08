@@ -64,7 +64,7 @@ public class Party {
     public String toString() {
         return "Party{" +
                 "id=" + id +
-                ",name='" + name + "'" +
+                ", name='" + name + "'" +
                 '}';
     }
 

@@ -50,10 +50,17 @@ public class Candidate {
 
     @Override
     public String toString() {
-        return "Candidate{" +
-                "partyId=" + party.getId() +
-                ",name='" + getFullName() + "'" +
-                "}";
+        if (party == null) {
+            return "Candidate{" +
+                    "partyId=" + null +
+                    ", name='" + getFullName() + "'" +
+                    "}";
+        } else {
+            return "Candidate{" +
+                    "partyId=" + party.getId() +
+                    ", name='" + getFullName() + "'" +
+                    "}";
+        }
     }
 
     @Override

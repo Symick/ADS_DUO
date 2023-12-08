@@ -50,8 +50,24 @@ public class Election {
         return parties.getOrDefault(id, null);
     }
 
+    /**
+     * Adds a party to the election
+     * @param party the party to be added
+     */
+    public void addParty(Party party) {
+        this.parties.put(party.getId(), party);
+    }
+
     public Set<? extends Constituency> getConstituencies() {
         return this.constituencies;
+    }
+
+    /**
+     * Adds a constituency to the election
+     * @param constituency the constituency to be added
+     */
+    public void addConstituency(Constituency constituency) {
+        this.constituencies.add(constituency);
     }
 
     /**
@@ -218,7 +234,11 @@ public class Election {
         return integers.stream().reduce(Integer::sum).orElse(0);
     }
 
-
+    /**
+     * Prepares a summary of the election results for a given party
+     * @param partyId the id of the party of interest
+     * @return a summary of the election results for the given party
+     */
     public String prepareSummary(int partyId) {
         Party party = this.getParty(partyId);
 
@@ -236,6 +256,10 @@ public class Election {
         return summary.toString();
     }
 
+    /**
+     * Prepares a summary of the election results
+     * @return a summary of the election results
+     */
     public String prepareSummary() {
         StringBuilder summary = new StringBuilder()
                 .append("\nElection summary of ").append(this.name).append(":\n\n")
@@ -252,9 +276,17 @@ public class Election {
                 .append(this.getPollingStationsByZipCodeRange("1091AA", "1091ZZ")).append("\n")
                 .append("Top 10 election results by party percentage in Amsterdam area with zip codes 1091AA-1091ZZ:\n")
                 .append(sortedElectionResultsByPartyPercentage(10, this.getVotesByPartyAcrossPollingStations(this.getPollingStationsByZipCodeRange("1091AA", "1091ZZ")))).append("\n")
-                .append("Most representative polling station is:\n")
-                .append(this.findMostRepresentativePollingStation()).append("\n")
-                .append(sortedElectionResultsByPartyPercentage(this.getParties().size(), this.findMostRepresentativePollingStation().getVotesByParty()));
+                .append("Most representative polling station is:\n");
+
+        PollingStation mostRepresentativeStation = this.findMostRepresentativePollingStation();
+
+        // If mostRepresentativeStation is not null, append the station and the sortedElectionResultsByPartyPercentage.
+        if (mostRepresentativeStation != null) {
+            summary.append(mostRepresentativeStation).append("\n")
+                    .append(sortedElectionResultsByPartyPercentage(this.getParties().size(), mostRepresentativeStation.getVotesByParty()));
+        } else {
+            summary.append("No most representative polling station found.\n");
+        }
 
         return summary.toString();
     }
