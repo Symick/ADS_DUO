@@ -27,9 +27,9 @@ public class ElectionsMain {
         //  That will exceed capacity limits of your repository and block further access.
 
         // FIXME? In case all tests fail due to a null value for election, you might try to change this resourceName.
-        final Election election = Election.importFromDataFolder(PathUtils.getResourcePath("/EML_bestanden_TK2021_HvA_UvA"));
+//        final Election election = Election.importFromDataFolder(PathUtils.getResourcePath("/EML_bestanden_TK2021_HvA_UvA"));
         // final Election election = Election.importFromDataFolder(PathUtils.getResourcePath("/EML_bestanden_TK2021_NH"));
-        // final Election election = Election.importFromDataFolder(PathUtils.getResourcePath("/EML_bestanden_TK2021"));
+         final Election election = Election.importFromDataFolder(PathUtils.getResourcePath("/EML_bestanden_TK2021"));
 
         final int randomPartyId = 1 + (int)Math.floor(Math.random() * election.getParties().size());
 

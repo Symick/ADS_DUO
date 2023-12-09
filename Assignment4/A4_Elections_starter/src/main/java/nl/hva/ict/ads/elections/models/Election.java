@@ -192,10 +192,12 @@ public class Election {
      * @return the most representative polling station.
      */
     public PollingStation findMostRepresentativePollingStation() {
+        //calculate total votes beforehand for efficiency
+        Map<Party, Integer> totalVotes = this.getVotesByParty();
         return this.constituencies.stream()
                 .flatMap(constituency -> constituency.getPollingStations().stream())
                 .min(Comparator.comparingDouble(pollingStation -> euclidianVotesDistributionDeviation(
-                        pollingStation.getVotesByParty(), getVotesByParty())))
+                        pollingStation.getVotesByParty(), totalVotes)))
                 .orElse(null);
     }
 
