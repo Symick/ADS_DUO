@@ -267,7 +267,7 @@ public class Election {
                 .append(this.getParties().stream().sorted(Comparator.comparingInt(Party::getId)).toList()).append("\n")
                 .append("Total number of constituencies = ").append(this.getConstituencies().size()).append("\n")
                 .append("Total number of polling stations = ").append(this.getConstituencies().stream().mapToInt(constituency -> constituency.getPollingStations().size()).sum()).append("\n")
-                .append("Total number of candidates = ").append(this.getAllCandidates().size()).append("\n")
+                .append("Total number of candidates in the election = ").append(this.getAllCandidates().size()).append("\n")
                 .append("Different candidates with duplicate names across different parties are:\n")
                 .append(this.getCandidatesWithDuplicateNames()).append("\n\n")
                 .append("Overall election results by party percentage:\n")

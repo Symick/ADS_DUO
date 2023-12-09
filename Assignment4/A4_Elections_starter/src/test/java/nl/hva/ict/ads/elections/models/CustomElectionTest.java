@@ -7,14 +7,12 @@ import org.junit.jupiter.api.Test;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CustomElectionTest {
 
     private Election election;
-    private Party party;
     private Candidate candidate;
     private Constituency constituency;
 
@@ -22,12 +20,14 @@ public class CustomElectionTest {
     void setup() {
         election = new Election("Test Election");
 
-        party = new Party(1, "Test Party");
+        Party party = new Party(1, "Test Party");
+        election.addParty(party);
 
         candidate = new Candidate("Test", null, "Candidate");
         party.addOrGetCandidate(candidate);
 
         election.addParty(party);
+
         constituency = new Constituency(1, "Test Constituency");
         election.addConstituency(constituency);
 
@@ -50,8 +50,6 @@ public class CustomElectionTest {
     void prepareSummaryShouldReturnCorrectSummaryForExistingParty() {
 //         Add a registration for the candidate in the constituency.
         constituency.register(1, candidate);
-
-        // TODO: Party is somehow null.
 
         String expectedSummary = "\nSummary of Party{id=1, name='Test Party'}:\n" +
                 "Total number of candidates = 1\n" +
@@ -76,7 +74,7 @@ public class CustomElectionTest {
                 "[Party{id=1, name='Test Party'}]\n" +
                 "Total number of constituencies = 1\n" +
                 "Total number of polling stations = 1\n" +
-                "Total number of candidates = 1\n" +
+                "Total number of candidates in the election = 1\n" +
                 "Different candidates with duplicate names across different parties are:\n" +
                 "[]\n\n" +
                 "Overall election results by party percentage:\n" +
@@ -101,7 +99,7 @@ public class CustomElectionTest {
                 "[]\n" +
                 "Total number of constituencies = 0\n" +
                 "Total number of polling stations = 0\n" +
-                "Total number of candidates = 0\n" +
+                "Total number of candidates in the election = 0\n" +
                 "Different candidates with duplicate names across different parties are:\n" +
                 "[]\n\n" +
                 "Overall election results by party percentage:\n" +
