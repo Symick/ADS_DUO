@@ -23,11 +23,11 @@ public class CustomElectionTest {
         election = new Election("Test Election");
 
         party = new Party(1, "Test Party");
-        election.addParty(party);
 
         candidate = new Candidate("Test", null, "Candidate");
-        party.getCandidates().add(candidate);
+        party.addOrGetCandidate(candidate);
 
+        election.addParty(party);
         constituency = new Constituency(1, "Test Constituency");
         election.addConstituency(constituency);
 
@@ -55,7 +55,7 @@ public class CustomElectionTest {
 
         String expectedSummary = "\nSummary of Party{id=1, name='Test Party'}:\n" +
                 "Total number of candidates = 1\n" +
-                "Candidates: [Candidate{partyId=1,name='Test Candidate'}]\n" +
+                "Candidates: [Candidate{partyId=1, name='Test Candidate'}]\n" +
                 "Total number of registrations = 1\n" +
                 "Number of registrations by constituency: {Constituency{id=1, name='Test Constituency'}=1}";
 
