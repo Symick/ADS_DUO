@@ -173,14 +173,43 @@ public abstract class AbstractGraph<V> {
      *          or null if target cannot be matched with a vertex in the sub-graph from startVertex
      */
     public GPath depthFirstSearch(V startVertex, V targetVertex) {
-
         if (startVertex == null || targetVertex == null) return null;
 
-        // TODO calculate the path from start to target by recursive depth-first-search
+        GPath path = new GPath();
+        path.vertices = depthFirstSearch(startVertex, targetVertex, path.visited);
+        return path;    // replace by a proper outcome, if any
+    }
 
+    /**
+     * Recursive function handling the depth first search
+     * @param currentVertex the current index the traversal is at
+     * @param targetVertex the target which the dfs should find
+     * @param visited the vertices already visited by dfs
+     * @return a queue representing the path to take to get from the current to the target. Is recursively build.
+     */
+    private Deque<V> depthFirstSearch(V currentVertex, V targetVertex, Set<V> visited) {
+        //base case if vertex doesn't result in finding the target return null.
+        //Ensures only vertices used to find the path are added to the path and no dead ends.
+        if (visited.contains(currentVertex)) return null;
+        visited.add(currentVertex);
 
+        //if current is target Return path
+        if (currentVertex.equals(targetVertex)) {
+            Deque<V> path = new LinkedList<>();
+            path.addLast(targetVertex);
+            return path;
+        }
 
-        return null;    // replace by a proper outcome, if any
+        //traverse over neighbours
+        for (V neighbour : getNeighbours(currentVertex)) {
+            Deque<V> path = depthFirstSearch(neighbour, targetVertex, visited);
+
+            if (path != null) {
+                path.addFirst(currentVertex);
+                return path;
+            }
+        }
+        return null;
     }
 
 
