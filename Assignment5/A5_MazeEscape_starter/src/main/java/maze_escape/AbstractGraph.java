@@ -177,6 +177,9 @@ public abstract class AbstractGraph<V> {
 
         GPath path = new GPath();
         path.vertices = depthFirstSearch(startVertex, targetVertex, path.visited);
+
+        if (path.vertices == null) return null;
+
         return path;    // replace by a proper outcome, if any
     }
 
@@ -188,7 +191,7 @@ public abstract class AbstractGraph<V> {
      * @return a queue representing the path to take to get from the current to the target. Is recursively build.
      */
     private Deque<V> depthFirstSearch(V currentVertex, V targetVertex, Set<V> visited) {
-        //base case if vertex doesn't result in finding the target return null.
+        //base case if vertex doesn't result in finding the target return
         //Ensures only vertices used to find the path are added to the path and no dead ends.
         if (visited.contains(currentVertex)) return null;
         visited.add(currentVertex);
@@ -202,7 +205,7 @@ public abstract class AbstractGraph<V> {
 
         //traverse over neighbours
         for (V neighbour : getNeighbours(currentVertex)) {
-            Deque<V> path = depthFirstSearch(neighbour, targetVertex, visited);
+             Deque<V> path = depthFirstSearch(neighbour, targetVertex, visited);
 
             if (path != null) {
                 path.addFirst(currentVertex);
