@@ -31,11 +31,23 @@ public abstract class AbstractGraph<V> {
      * @return
      */
     public Set<V> getAllVertices(V firstVertex) {
-        // TODO calculate recursively the set of all connected vertices that can be reached from the given start vertex
-        //  hint: reuse getNeighbours()
+        Set<V> vertices = new HashSet<>();
+        getAllVerticesRecursively(firstVertex, vertices);
+        return vertices;    // replace by a proper outcome
+    }
 
+    /**
+     * Recursive traverse over all connected vertices and adding it to the set
+     * @param currentVertex the current vertex that is being traverse
+     * @param vertices a set of vertices already traversed
+     */
+    private void getAllVerticesRecursively(V currentVertex, Set<V> vertices) {
+        if (vertices.contains(currentVertex)) return;
+        vertices.add(currentVertex);
 
-        return null;    // replace by a proper outcome
+        for (V neighbour : getNeighbours(currentVertex)){
+            getAllVerticesRecursively(neighbour, vertices);
+        }
     }
 
 
@@ -53,18 +65,38 @@ public abstract class AbstractGraph<V> {
      */
     public String formatAdjacencyList(V firstVertex) {
         StringBuilder stringBuilder = new StringBuilder("Graph adjacency list:\n");
-
-        // TODO recursively build the adjacency list including all vertices that can be reached from firstVertex
-        //  following a recursive pre-order traversal of a spanning tree
-        //  using the above stringBuilder to format the list
-        //  hint: use the getNeighbours() method to retrieve the roots of the child subtrees.
-
-
-
-        // return the result
+        formatAdjacencyListRecursive(firstVertex, stringBuilder, new HashSet<>());
         return stringBuilder.toString();
     }
 
+    /**
+     * Helper function to print out adjacency list for all vertices
+     * @param currentVertex the current vertex to print the adjacency list for
+     * @param stringBuilder the stringbuilder to create the whole adjacency list
+     * @param visited a list to track all vertices already printed out, they should not be visited again
+     */
+    private void formatAdjacencyListRecursive(V currentVertex, StringBuilder stringBuilder, Set<V> visited) {
+        if (visited.contains(currentVertex)) return;
+
+        visited.add(currentVertex);
+        //print current
+        stringBuilder.append(currentVertex).append(": [");
+        Set<V> neighbours = getNeighbours(currentVertex);
+
+        //print list of neighbours
+        for (V neighbour : neighbours) {
+            stringBuilder.append(neighbour).append(",");
+        }
+        if (stringBuilder.charAt(stringBuilder.length() - 1) == ',') {
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        }
+        stringBuilder.append("]\n");
+
+        //recursively solve for neighbours
+        for (V neighbour : neighbours) {
+            formatAdjacencyListRecursive(neighbour, stringBuilder, visited);
+        }
+    }
 
     /**
      * represents a directed path of connected vertices in the graph
