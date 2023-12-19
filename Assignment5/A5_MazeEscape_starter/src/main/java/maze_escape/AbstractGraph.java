@@ -177,10 +177,10 @@ public abstract class AbstractGraph<V> {
 
         GPath path = new GPath();
         path.vertices = depthFirstSearch(startVertex, targetVertex, path.visited);
-
+        //no path was found
         if (path.vertices == null) return null;
 
-        return path;    // replace by a proper outcome, if any
+        return path;
     }
 
     /**
@@ -227,14 +227,41 @@ public abstract class AbstractGraph<V> {
     public GPath breadthFirstSearch(V startVertex, V targetVertex) {
 
         if (startVertex == null || targetVertex == null) return null;
+        GPath path = new GPath();
 
-        // TODO calculate the path from start to target by breadth-first-search
+        if (startVertex.equals(targetVertex)) {
+            path.vertices.addLast(targetVertex);
+            path.visited.add(startVertex);
+            return path;
+        }
 
+        Queue<V> stillToVisited = new LinkedList<>();
+        Map<V,V> visitedFrom = new HashMap<>();
 
+        //setup the start
+        visitedFrom.put(startVertex, null);
+        path.visited.add(startVertex);
+        V current = startVertex;
 
+        while(current != null) {
+            for (V neighbour : this.getNeighbours(current)) {
+                path.visited.add(neighbour);
 
-
-        return null;    // replace by a proper outcome, if any
+                if (neighbour.equals(targetVertex)) {
+                    path.vertices.addLast(targetVertex);
+                    while (current != null) {
+                        path.vertices.addFirst(current);
+                        current = visitedFrom.get(current);
+                    }
+                    return path;
+                } else if (!visitedFrom.containsKey(neighbour)) {
+                    visitedFrom.put(neighbour, current);
+                    stillToVisited.offer(neighbour);
+                }
+            }
+            current = stillToVisited.poll();
+        }
+        return null;
     }
 
     // helper class to build the spanning tree of visited vertices in dijkstra's shortest path algorithm
