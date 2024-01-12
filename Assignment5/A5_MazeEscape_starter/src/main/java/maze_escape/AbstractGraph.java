@@ -6,17 +6,20 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractGraph<V> {
 
-    /** Graph representation:
-     *  this class implements graph search algorithms on a graph with abstract vertex type V
-     *  for every vertex in the graph, its neighbours can be found by use of abstract method getNeighbours(fromVertex)
-     *  this abstraction can be used for both directed and undirected graphs
+    /**
+     * Graph representation:
+     * this class implements graph search algorithms on a graph with abstract vertex type V
+     * for every vertex in the graph, its neighbours can be found by use of abstract method getNeighbours(fromVertex)
+     * this abstraction can be used for both directed and undirected graphs
      **/
 
-    public AbstractGraph() { }
+    public AbstractGraph() {
+    }
 
     /**
      * retrieves all neighbours of the given fromVertex
      * if the graph is directed, the implementation of this method shall follow the outgoing edges of fromVertex
+     *
      * @param fromVertex
      * @return
      */
@@ -27,7 +30,8 @@ public abstract class AbstractGraph<V> {
      * if the graph is directed, only outgoing edges shall be traversed
      * firstVertex shall be included in the result as well
      * if the graph is connected, all vertices shall be found
-     * @param firstVertex   the start vertex for the retrieval
+     *
+     * @param firstVertex the start vertex for the retrieval
      * @return
      */
     public Set<V> getAllVertices(V firstVertex) {
@@ -38,14 +42,15 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Recursive traverse over all connected vertices and adding it to the set
+     *
      * @param currentVertex the current vertex that is being traverse
-     * @param vertices a set of vertices already traversed
+     * @param vertices      a set of vertices already traversed
      */
     private void getAllVerticesRecursively(V currentVertex, Set<V> vertices) {
         if (vertices.contains(currentVertex)) return;
         vertices.add(currentVertex);
 
-        for (V neighbour : getNeighbours(currentVertex)){
+        for (V neighbour : getNeighbours(currentVertex)) {
             getAllVerticesRecursively(neighbour, vertices);
         }
     }
@@ -54,12 +59,13 @@ public abstract class AbstractGraph<V> {
     /**
      * Formats the adjacency list of the subgraph starting at the given firstVertex
      * according to the format:
-     *  	vertex1: [neighbour11,neighbour12,…]
-     *  	vertex2: [neighbour21,neighbour22,…]
-     *  	…
+     * vertex1: [neighbour11,neighbour12,…]
+     * vertex2: [neighbour21,neighbour22,…]
+     * …
      * Uses a pre-order traversal of a spanning tree of the sub-graph starting with firstVertex as the root
      * if the graph is directed, only outgoing edges shall be traversed
      * , and using the getNeighbours() method to retrieve the roots of the child subtrees.
+     *
      * @param firstVertex
      * @return
      */
@@ -71,9 +77,10 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Helper function to print out adjacency list for all vertices
+     *
      * @param currentVertex the current vertex to print the adjacency list for
      * @param stringBuilder the stringbuilder to create the whole adjacency list
-     * @param visited a list to track all vertices already printed out, they should not be visited again
+     * @param visited       a list to track all vertices already printed out, they should not be visited again
      */
     private void formatAdjacencyListRecursive(V currentVertex, StringBuilder stringBuilder, Set<V> visited) {
         if (visited.contains(currentVertex)) return;
@@ -109,13 +116,14 @@ public abstract class AbstractGraph<V> {
         /**
          * representation invariants:
          * 1. vertices contains a sequence of vertices that are neighbours in the graph,
-         *    i.e. FOR ALL i: 1 < i < vertices.length: getNeighbours(vertices[i-1]).contains(vertices[i])
+         * i.e. FOR ALL i: 1 < i < vertices.length: getNeighbours(vertices[i-1]).contains(vertices[i])
          * 2. a path with one vertex equal start and target vertex
          * 3. a path without vertices is empty, does not have a start nor a target
          * totalWeight is a helper attribute to capture total path length from a function on two neighbouring vertices
          * visited is a helper set to be able to track visited vertices in searches, only for analysis purposes
          **/
         private static final int DISPLAY_CUT = 10;
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(
@@ -123,7 +131,7 @@ public abstract class AbstractGraph<V> {
                             this.totalWeight, this.vertices.size(), this.visited.size()));
             String separator = "";
             int count = 0;
-            final int tailCut = this.vertices.size()-1 - DISPLAY_CUT;
+            final int tailCut = this.vertices.size() - 1 - DISPLAY_CUT;
             for (V v : this.vertices) {
                 // limit the length of the text representation for long paths.
                 if (count < DISPLAY_CUT || count > tailCut) {
@@ -141,12 +149,13 @@ public abstract class AbstractGraph<V> {
         /**
          * recalculates the total weight of the path from a given weightMapper that calculates the weight of
          * the path segment between two neighbouring vertices.
+         *
          * @param weightMapper
          */
-        public void reCalculateTotalWeight(BiFunction<V,V,Double> weightMapper) {
+        public void reCalculateTotalWeight(BiFunction<V, V, Double> weightMapper) {
             this.totalWeight = 0.0;
             V previous = null;
-            for (V v: this.vertices) {
+            for (V v : this.vertices) {
                 // the first vertex of the iterator has no predecessor and hence no weight contribution
                 if (previous != null) this.totalWeight += weightMapper.apply(previous, v);
                 previous = v;
@@ -161,16 +170,19 @@ public abstract class AbstractGraph<V> {
             return this.totalWeight;
         }
 
-        public Set<V> getVisited() { return this.visited; }
+        public Set<V> getVisited() {
+            return this.visited;
+        }
     }
 
     /**
      * Uses a depth-first search algorithm to find a path from the startVertex to targetVertex in the subgraph
      * All vertices that are being visited by the search should also be registered in path.visited
+     *
      * @param startVertex
      * @param targetVertex
-     * @return  the path from startVertex to targetVertex
-     *          or null if target cannot be matched with a vertex in the sub-graph from startVertex
+     * @return the path from startVertex to targetVertex
+     * or null if target cannot be matched with a vertex in the sub-graph from startVertex
      */
     public GPath depthFirstSearch(V startVertex, V targetVertex) {
         if (startVertex == null || targetVertex == null) return null;
@@ -185,9 +197,10 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Recursive function handling the depth first search
+     *
      * @param currentVertex the current index the traversal is at
-     * @param targetVertex the target which the dfs should find
-     * @param visited the vertices already visited by dfs
+     * @param targetVertex  the target which the dfs should find
+     * @param visited       the vertices already visited by dfs
      * @return a queue representing the path to take to get from the current to the target. Is recursively build.
      */
     private Deque<V> depthFirstSearch(V currentVertex, V targetVertex, Set<V> visited) {
@@ -205,7 +218,7 @@ public abstract class AbstractGraph<V> {
 
         //traverse over neighbours
         for (V neighbour : getNeighbours(currentVertex)) {
-             Deque<V> path = depthFirstSearch(neighbour, targetVertex, visited);
+            Deque<V> path = depthFirstSearch(neighbour, targetVertex, visited);
 
             if (path != null) {
                 path.addFirst(currentVertex);
@@ -219,10 +232,11 @@ public abstract class AbstractGraph<V> {
     /**
      * Uses a breadth-first search algorithm to find a path from the startVertex to targetVertex in the subgraph
      * All vertices that are being visited by the search should also be registered in path.visited
+     *
      * @param startVertex
      * @param targetVertex
-     * @return  the path from startVertex to targetVertex
-     *          or null if target cannot be matched with a vertex in the sub-graph from startVertex
+     * @return the path from startVertex to targetVertex
+     * or null if target cannot be matched with a vertex in the sub-graph from startVertex
      */
     public GPath breadthFirstSearch(V startVertex, V targetVertex) {
 
@@ -236,14 +250,14 @@ public abstract class AbstractGraph<V> {
         }
 
         Queue<V> stillToVisited = new LinkedList<>();
-        Map<V,V> visitedFrom = new HashMap<>();
+        Map<V, V> visitedFrom = new HashMap<>();
 
         //setup the start
         visitedFrom.put(startVertex, null);
         path.visited.add(startVertex);
         V current = startVertex;
 
-        while(current != null) {
+        while (current != null) {
             for (V neighbour : this.getNeighbours(current)) {
                 path.visited.add(neighbour);
 
@@ -286,15 +300,16 @@ public abstract class AbstractGraph<V> {
     /**
      * Calculates the edge-weighted shortest path from the startVertex to targetVertex in the subgraph
      * according to Dijkstra's algorithm of a minimum spanning tree
-     * @param startVertex
-     * @param targetVertex
-     * @param weightMapper   provides a function(v1,v2) by which the weight of an edge from v1 to v2
-     *                       can be retrieved or calculated
-     * @return  the shortest path from startVertex to targetVertex
-     *          or null if target cannot be matched with a vertex in the sub-graph from startVertex
+     *
+     * @param startVertex  the start vertex of the path
+     * @param targetVertex the target vertex of the path
+     * @param weightMapper provides a function(v1,v2) by which the weight of an edge from v1 to v2
+     *                     can be retrieved or calculated
+     * @return the shortest path from startVertex to targetVertex
+     * or null if target cannot be matched with a vertex in the sub-graph from startVertex
      */
     public GPath dijkstraShortestPath(V startVertex, V targetVertex,
-                                      BiFunction<V,V,Double> weightMapper) {
+                                      BiFunction<V, V, Double> weightMapper) {
 
         if (startVertex == null || targetVertex == null) return null;
 
@@ -320,27 +335,48 @@ public abstract class AbstractGraph<V> {
         nearestMSTNode.weightSumTo = 0.0;
         minimumSpanningTree.put(startVertex, nearestMSTNode);
 
-        // TODO maybe more helper variables or data structures, if needed
-
-
-
         while (nearestMSTNode != null) {
+            // Mark the nearestMSTNode as visited.
+            nearestMSTNode.marked = true;
 
-            // TODO continue Dijkstra's algorithm to process nearestMSTNode
-            //  mark nodes as you find their current shortest path to be final
-            //  if you hit the target: complete the path and bail out !!!
-            //  register all visited vertices for statistical purposes
+            // Check if the targetVertex has been reached.
+            if (nearestMSTNode.vertex.equals(targetVertex)) {
+                // Build the path from the MST.
+                while (nearestMSTNode != null) {
+                    path.vertices.addFirst(nearestMSTNode.vertex);
+                    nearestMSTNode = minimumSpanningTree.get(nearestMSTNode.parentVertex);
+                }
 
+                // Calculate the total weight of the path.
+                path.totalWeight = path.vertices.stream()
+                        .reduce((v1, v2) -> v2)
+                        .map(v -> minimumSpanningTree.get(v).weightSumTo)
+                        .orElse(0.0);
+                return path;
+            }
 
+            // Update the MST with the neighbours of the nearestMSTNode.
+            for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
+                // Skip neighbours that have already been visited.
+                if (minimumSpanningTree.containsKey(neighbour)) continue;
 
+                // Calculate the weight of the edge from nearestMSTNode to neighbour.
+                double weight = weightMapper.apply(nearestMSTNode.vertex, neighbour);
 
+                // Update the MST with the neighbour.
+                MSTNode neighbourMSTNode = new MSTNode(neighbour);
+                neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
+                neighbourMSTNode.weightSumTo = nearestMSTNode.weightSumTo + weight;
+                minimumSpanningTree.put(neighbour, neighbourMSTNode);
+            }
 
-
-            // TODO find the next nearest MSTNode that is not marked yet
-            nearestMSTNode = null;      // replace by a proper selection
+            // Find the nearestMSTNode among the unvisited nodes.
+            nearestMSTNode = minimumSpanningTree.values().stream()
+                    .filter(mstNode -> !mstNode.marked)
+                    .min(Comparator.naturalOrder())
+                    .orElse(null);
         }
 
-
-        return null;        // replace by a proper outcome, if any
+        return null;
     }
 }
