@@ -309,65 +309,109 @@ public abstract class AbstractGraph<V> {
      * or null if target cannot be matched with a vertex in the sub-graph from startVertex
      */
     public GPath dijkstraShortestPath(V startVertex, V targetVertex, BiFunction<V, V, Double> weightMapper) {
+        // If start or target is null return null.
         if (startVertex == null || targetVertex == null) return null;
 
+        // Create a new path and add the start vertex to the visited list.
         GPath path = new GPath();
         path.visited.add(startVertex);
 
+        // If start and target are the same return path with start vertex.
         if (startVertex.equals(targetVertex)) {
             path.vertices.add(startVertex);
             return path;
         }
 
+        // Create a minimum spanning tree.
         Map<V, MSTNode> minimumSpanningTree = new HashMap<>();
+
+        // Create a new MSTNode for the start vertex.
         MSTNode nearestMSTNode = new MSTNode(startVertex);
         nearestMSTNode.weightSumTo = 0.0;
+
+        // Add the start vertex to the minimum spanning tree.
         minimumSpanningTree.put(startVertex, nearestMSTNode);
 
         while (nearestMSTNode != null) {
+            // Mark the nearest node as visited.
             nearestMSTNode.marked = true;
 
+            // If target is found build path and return.
             if (nearestMSTNode.vertex.equals(targetVertex)) {
                 buildPath(path, minimumSpanningTree, nearestMSTNode);
                 return path;
             }
 
+            // Update the minimum spanning tree with the nearest node.
             updateMST(nearestMSTNode, minimumSpanningTree, weightMapper);
 
+            // Find the next nearest node.
             nearestMSTNode = findNearestMSTNode(minimumSpanningTree);
         }
 
         return null;
     }
 
+    /**
+     * Builds the path from the minimum spanning tree.
+     * @param path                 the path to build.
+     * @param minimumSpanningTree  the minimum spanning tree to build the path from.
+     * @param nearestMSTNode       the nearest node to start building the path from.
+     */
     private void buildPath(GPath path, Map<V, MSTNode> minimumSpanningTree, MSTNode nearestMSTNode) {
+        // Loop over all nodes in the minimum spanning tree.
         while (nearestMSTNode != null) {
+            // Add the nearest node to the path.
             path.vertices.addFirst(nearestMSTNode.vertex);
+
+            // Get the next nearest node.
             nearestMSTNode = minimumSpanningTree.get(nearestMSTNode.parentVertex);
         }
+
+        // Calculate the total weight of the path.
         path.totalWeight = path.vertices.stream()
                 .reduce((v1, v2) -> v2)
                 .map(v -> minimumSpanningTree.get(v).weightSumTo)
                 .orElse(0.0);
-        path.visited.addAll(minimumSpanningTree.keySet());
+
+        // Add all visited vertices to the path.
+        path.visited.addAll(path.vertices);
     }
 
+    /**
+     * Updates the minimum spanning tree with the nearest node.
+     * @param nearestMSTNode       the nearest node to update the minimum spanning tree with.
+     * @param minimumSpanningTree  the minimum spanning tree to update.
+     * @param weightMapper         the weight mapper to use to calculate the weight between two vertices.
+     */
     private void updateMST(MSTNode nearestMSTNode, Map<V, MSTNode> minimumSpanningTree, BiFunction<V, V, Double> weightMapper) {
+        // Loop over all neighbours of the nearest node.
         for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
+            // If the neighbour is already in the minimum spanning tree, skip it.
             if (minimumSpanningTree.containsKey(neighbour)) continue;
 
+            // Calculate the weight between the nearest node and the neighbour and create a new MSTNode.
             double weight = weightMapper.apply(nearestMSTNode.vertex, neighbour);
             MSTNode neighbourMSTNode = new MSTNode(neighbour);
+
+            // Update the neighbour MSTNode.
             neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
             neighbourMSTNode.weightSumTo = nearestMSTNode.weightSumTo + weight;
+
+            // Add the neighbour to the minimum spanning tree.
             minimumSpanningTree.put(neighbour, neighbourMSTNode);
         }
     }
 
+    /**
+     * Finds the nearest node in the minimum spanning tree that is not marked.
+     * @param minimumSpanningTree  the minimum spanning tree to search in.
+     * @return                     the nearest node that is not marked.
+     */
     private MSTNode findNearestMSTNode(Map<V, MSTNode> minimumSpanningTree) {
         return minimumSpanningTree.values().stream()
                 .filter(mstNode -> !mstNode.marked)
-                .min(Comparator.naturalOrder())
+                .min(MSTNode::compareTo)
                 .orElse(null);
     }
 }
