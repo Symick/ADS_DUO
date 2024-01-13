@@ -377,6 +377,9 @@ public abstract class AbstractGraph<V> {
                     path.vertices.addFirst(nearestMSTNode.vertex);
                     nearestMSTNode = minimumSpanningTree.get(nearestMSTNode.parentVertex);
                 }
+
+                path.totalWeight = minimumSpanningTree.get(targetVertex).weightSumTo;
+
                 return path;
             }
 
