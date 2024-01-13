@@ -289,10 +289,11 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Helper function to build the path from the minimum spanning tree.
-     * @param nearestMSTNode       the current node to build the path from
-     * @param path                 the path to build
-     * @param minimumSpanningTree  the minimum spanning tree
-     * @param targetVertex         the target vertex
+     *
+     * @param nearestMSTNode      the current node to build the path from
+     * @param path                the path to build
+     * @param minimumSpanningTree the minimum spanning tree
+     * @param targetVertex        the target vertex
      */
     private void buildPath(MSTNode nearestMSTNode, GPath path, Map<V, MSTNode> minimumSpanningTree, V targetVertex) {
         while (nearestMSTNode != null) {
@@ -309,6 +310,7 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Helper function to process a neighbour of the current node.
+     *
      * @param nearestMSTNode      the current node
      * @param neighbour           the neighbour to process
      * @param minimumSpanningTree the minimum spanning tree
@@ -318,125 +320,117 @@ public abstract class AbstractGraph<V> {
      */
     private void processNeighbour(MSTNode nearestMSTNode, V neighbour, Map<V, MSTNode> minimumSpanningTree, PriorityQueue<MSTNode> priorityQueue, GPath path, BiFunction<V, V, Double> weightMapper) {
         // Get the neighbour node from the minimum spanning tree.
-        MSTNode neighbourMSTNode = minimumSpanningTree.get(neighbour);
+        MSTNode neighbourMSTNode = minimumSpanningTree.getOrDefault(neighbour, new MSTNode(neighbour));
+        if (neighbourMSTNode.marked)
+            return;
+        path.visited.add(neighbour);
+        double newWeight = nearestMSTNode.weightSumTo + weightMapper.apply(nearestMSTNode.vertex, neighbour);
 
         // If the neighbour is not in the minimum spanning tree or not marked.
-        if (neighbourMSTNode == null || !neighbourMSTNode.marked) {
-            // Calculate the new weight.
-            double newWeight = nearestMSTNode.weightSumTo + weightMapper.apply(nearestMSTNode.vertex, neighbour);
-
-            // Use computeIfAbsent to add the neighbour to the minimum spanning tree.
-            // Either get the existing node or create a new one.
-            neighbourMSTNode = minimumSpanningTree.computeIfAbsent(neighbour, k -> {
-                MSTNode node = new MSTNode(k);
-                priorityQueue.offer(node);
-                path.visited.add(k);
-                return node;
-            });
-
-            // Update the weight and parent vertex if the new weight is smaller.
-            if (newWeight < neighbourMSTNode.weightSumTo) {
-                neighbourMSTNode.weightSumTo = newWeight;
-                neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
-            }
+        if (neighbourMSTNode.weightSumTo > newWeight) {
+            neighbourMSTNode.weightSumTo = newWeight;
+            neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
+            minimumSpanningTree.put(neighbour, neighbourMSTNode);
+            priorityQueue.offer(neighbourMSTNode);
         }
+    }
+
+
+/**
+ * represents a directed path of connected vertices in the graph
+ */
+public class GPath {
+    /**
+     * representation invariants:
+     * 1. vertices contains a sequence of vertices that are neighbours in the graph,
+     * i.e. FOR ALL i: 1 < i < vertices.length:
+     * getNeighbours(vertices[i-1]).contains(vertices[i])
+     * 2. a path with one vertex equal start and target vertex
+     * 3. a path without vertices is empty, does not have a start nor a target
+     * totalWeight is a helper attribute to capture total path length from a
+     * function on two neighbouring vertices
+     * visited is a helper set to be able to track visited vertices in searches,
+     * only for analysis purposes
+     **/
+    private static final int DISPLAY_CUT = 10;
+    private Deque<V> vertices = new LinkedList<>();
+    private double totalWeight = 0.0;
+    private Set<V> visited = new HashSet<>();
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(
+                String.format("Weight=%.2f Length=%d visited=%d (",
+                        this.totalWeight, this.vertices.size(), this.visited.size()));
+        String separator = "";
+        int count = 0;
+        final int tailCut = this.vertices.size() - 1 - DISPLAY_CUT;
+        for (V v : this.vertices) {
+            // limit the length of the text representation for long paths.
+            if (count < DISPLAY_CUT || count > tailCut) {
+                sb.append(separator).append(v.toString());
+                separator = ", ";
+            } else if (count == DISPLAY_CUT) {
+                sb.append(separator).append("...");
+            }
+            count++;
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
     /**
-     * represents a directed path of connected vertices in the graph
+     * recalculates the total weight of the path from a given weightMapper that
+     * calculates the weight of
+     * the path segment between two neighbouring vertices.
+     *
+     * @param weightMapper
      */
-    public class GPath {
-        /**
-         * representation invariants:
-         * 1. vertices contains a sequence of vertices that are neighbours in the graph,
-         * i.e. FOR ALL i: 1 < i < vertices.length:
-         * getNeighbours(vertices[i-1]).contains(vertices[i])
-         * 2. a path with one vertex equal start and target vertex
-         * 3. a path without vertices is empty, does not have a start nor a target
-         * totalWeight is a helper attribute to capture total path length from a
-         * function on two neighbouring vertices
-         * visited is a helper set to be able to track visited vertices in searches,
-         * only for analysis purposes
-         **/
-        private static final int DISPLAY_CUT = 10;
-        private Deque<V> vertices = new LinkedList<>();
-        private double totalWeight = 0.0;
-        private Set<V> visited = new HashSet<>();
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder(
-                    String.format("Weight=%.2f Length=%d visited=%d (",
-                            this.totalWeight, this.vertices.size(), this.visited.size()));
-            String separator = "";
-            int count = 0;
-            final int tailCut = this.vertices.size() - 1 - DISPLAY_CUT;
-            for (V v : this.vertices) {
-                // limit the length of the text representation for long paths.
-                if (count < DISPLAY_CUT || count > tailCut) {
-                    sb.append(separator).append(v.toString());
-                    separator = ", ";
-                } else if (count == DISPLAY_CUT) {
-                    sb.append(separator).append("...");
-                }
-                count++;
-            }
-            sb.append(")");
-            return sb.toString();
-        }
-
-        /**
-         * recalculates the total weight of the path from a given weightMapper that
-         * calculates the weight of
-         * the path segment between two neighbouring vertices.
-         *
-         * @param weightMapper
-         */
-        public void reCalculateTotalWeight(BiFunction<V, V, Double> weightMapper) {
-            this.totalWeight = 0.0;
-            V previous = null;
-            for (V v : this.vertices) {
-                // the first vertex of the iterator has no predecessor and hence no weight
-                // contribution
-                if (previous != null)
-                    this.totalWeight += weightMapper.apply(previous, v);
-                previous = v;
-            }
-        }
-
-        public Queue<V> getVertices() {
-            return this.vertices;
-        }
-
-        public double getTotalWeight() {
-            return this.totalWeight;
-        }
-
-        public Set<V> getVisited() {
-            return this.visited;
+    public void reCalculateTotalWeight(BiFunction<V, V, Double> weightMapper) {
+        this.totalWeight = 0.0;
+        V previous = null;
+        for (V v : this.vertices) {
+            // the first vertex of the iterator has no predecessor and hence no weight
+            // contribution
+            if (previous != null)
+                this.totalWeight += weightMapper.apply(previous, v);
+            previous = v;
         }
     }
 
-    // helper class to build the spanning tree of visited vertices in dijkstra's
-    // shortest path algorithm
-    // your may change this class or delete it altogether follow a different
-    // approach in your implementation
-    private class MSTNode implements Comparable<MSTNode> {
-        protected V vertex; // the graph vertex that is concerned with this MSTNode
-        protected V parentVertex = null; // the parent's node vertex that has an edge towards this node's vertex
-        protected boolean marked = false; // indicates DSP processing has been marked complete for this vertex
-        protected double weightSumTo = Double.MAX_VALUE; // sum of weights of current shortest path towards this node's
-        // vertex
-
-        private MSTNode(V vertex) {
-            this.vertex = vertex;
-        }
-
-        // comparable interface helps to find a node with the shortest current path,
-        // sofar
-        @Override
-        public int compareTo(MSTNode otherMSTNode) {
-            return Double.compare(weightSumTo, otherMSTNode.weightSumTo);
-        }
+    public Queue<V> getVertices() {
+        return this.vertices;
     }
+
+    public double getTotalWeight() {
+        return this.totalWeight;
+    }
+
+    public Set<V> getVisited() {
+        return this.visited;
+    }
+}
+
+// helper class to build the spanning tree of visited vertices in dijkstra's
+// shortest path algorithm
+// your may change this class or delete it altogether follow a different
+// approach in your implementation
+private class MSTNode implements Comparable<MSTNode> {
+    protected V vertex; // the graph vertex that is concerned with this MSTNode
+    protected V parentVertex = null; // the parent's node vertex that has an edge towards this node's vertex
+    protected boolean marked = false; // indicates DSP processing has been marked complete for this vertex
+    protected double weightSumTo = Double.MAX_VALUE; // sum of weights of current shortest path towards this node's
+    // vertex
+
+    private MSTNode(V vertex) {
+        this.vertex = vertex;
+    }
+
+    // comparable interface helps to find a node with the shortest current path,
+    // sofar
+    @Override
+    public int compareTo(MSTNode otherMSTNode) {
+        return Double.compare(weightSumTo, otherMSTNode.weightSumTo);
+    }
+}
 }
