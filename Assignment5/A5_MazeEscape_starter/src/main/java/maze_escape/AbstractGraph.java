@@ -266,50 +266,80 @@ public abstract class AbstractGraph<V> {
         // Add the first node to the queue.
         priorityQueue.offer(nearestMSTNode);
 
+        // While the queue is not empty.
         while (!priorityQueue.isEmpty()) {
+            // Get the nearest node and mark it.
             nearestMSTNode = priorityQueue.poll();
             nearestMSTNode.marked = true;
 
-
+            // If the target is found, build the path and return it.
             if (nearestMSTNode.vertex.equals(targetVertex)) {
-                // build the path from the MST
-                while (nearestMSTNode != null) {
-                    path.vertices.addFirst(nearestMSTNode.vertex);
-                    nearestMSTNode = minimumSpanningTree.get(nearestMSTNode.parentVertex);
-                }
-
-                path.totalWeight = minimumSpanningTree.get(targetVertex).weightSumTo;
-
+                buildPath(nearestMSTNode, path, minimumSpanningTree, targetVertex);
                 return path;
             }
 
+            // Process all neighbours of the nearest node.
             for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
-                if (minimumSpanningTree.containsKey(neighbour) && minimumSpanningTree.get(neighbour).marked)
-                    continue;
-                path.visited.add(neighbour);
-
-                if (minimumSpanningTree.containsKey(neighbour)) {
-
-                    MSTNode neighbourMSTNode = minimumSpanningTree.get(neighbour);
-                    if (neighbourMSTNode.weightSumTo > nearestMSTNode.weightSumTo + weightMapper.apply(
-                            nearestMSTNode.vertex, neighbour)) {
-                        neighbourMSTNode.weightSumTo = nearestMSTNode.weightSumTo + weightMapper.apply(
-                                nearestMSTNode.vertex, neighbour);
-                        neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
-                    }
-
-                } else {
-                    MSTNode neighbourMSTNode = new MSTNode(neighbour);
-                    neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
-                    neighbourMSTNode.weightSumTo = nearestMSTNode.weightSumTo + weightMapper.apply(nearestMSTNode.vertex,
-                            neighbour);
-                    minimumSpanningTree.put(neighbour, neighbourMSTNode);
-                    priorityQueue.offer(neighbourMSTNode);
-                }
+                processNeighbour(nearestMSTNode, neighbour, minimumSpanningTree, priorityQueue, path, weightMapper);
             }
         }
 
         return null;
+    }
+
+    /**
+     * Helper function to build the path from the minimum spanning tree.
+     * @param nearestMSTNode       the current node to build the path from
+     * @param path                 the path to build
+     * @param minimumSpanningTree  the minimum spanning tree
+     * @param targetVertex         the target vertex
+     */
+    private void buildPath(MSTNode nearestMSTNode, GPath path, Map<V, MSTNode> minimumSpanningTree, V targetVertex) {
+        while (nearestMSTNode != null) {
+            // Add the vertex to the path.
+            path.vertices.addFirst(nearestMSTNode.vertex);
+
+            // Get the parent vertex.
+            nearestMSTNode = minimumSpanningTree.get(nearestMSTNode.parentVertex);
+        }
+
+        // Set the total weight of the path.
+        path.totalWeight = minimumSpanningTree.get(targetVertex).weightSumTo;
+    }
+
+    /**
+     * Helper function to process a neighbour of the current node.
+     * @param nearestMSTNode      the current node
+     * @param neighbour           the neighbour to process
+     * @param minimumSpanningTree the minimum spanning tree
+     * @param priorityQueue       the priority queue
+     * @param path                the path
+     * @param weightMapper        the weight mapper
+     */
+    private void processNeighbour(MSTNode nearestMSTNode, V neighbour, Map<V, MSTNode> minimumSpanningTree, PriorityQueue<MSTNode> priorityQueue, GPath path, BiFunction<V, V, Double> weightMapper) {
+        // Get the neighbour node from the minimum spanning tree.
+        MSTNode neighbourMSTNode = minimumSpanningTree.get(neighbour);
+
+        // If the neighbour is not in the minimum spanning tree or not marked.
+        if (neighbourMSTNode == null || !neighbourMSTNode.marked) {
+            // Calculate the new weight.
+            double newWeight = nearestMSTNode.weightSumTo + weightMapper.apply(nearestMSTNode.vertex, neighbour);
+
+            // Use computeIfAbsent to add the neighbour to the minimum spanning tree.
+            // Either get the existing node or create a new one.
+            neighbourMSTNode = minimumSpanningTree.computeIfAbsent(neighbour, k -> {
+                MSTNode node = new MSTNode(k);
+                priorityQueue.offer(node);
+                path.visited.add(k);
+                return node;
+            });
+
+            // Update the weight and parent vertex if the new weight is smaller.
+            if (newWeight < neighbourMSTNode.weightSumTo) {
+                neighbourMSTNode.weightSumTo = newWeight;
+                neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
+            }
+        }
     }
 
     /**
