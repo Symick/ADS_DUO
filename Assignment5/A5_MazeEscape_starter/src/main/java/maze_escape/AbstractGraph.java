@@ -336,6 +336,7 @@ public abstract class AbstractGraph<V> {
             // Mark the nearest node as visited.
             nearestMSTNode.marked = true;
 
+
             // If target is found build path and return.
             if (nearestMSTNode.vertex.equals(targetVertex)) {
                 buildPath(path, minimumSpanningTree, nearestMSTNode);
@@ -343,7 +344,30 @@ public abstract class AbstractGraph<V> {
             }
 
             // Update the minimum spanning tree with the nearest node.
-            updateMST(nearestMSTNode, minimumSpanningTree, weightMapper);
+            for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
+                // If the neighbour is already marked skip it.
+                if (minimumSpanningTree.get(neighbour) != null && minimumSpanningTree.get(neighbour).marked) continue;
+
+                // Calculate the weight of the neighbour.
+                double weight = weightMapper.apply(nearestMSTNode.vertex, neighbour);
+
+                // If the neighbour is not in the minimum spanning tree add it.
+                if (minimumSpanningTree.get(neighbour) == null) {
+                    MSTNode mstNode = new MSTNode(neighbour);
+                    mstNode.parentVertex = nearestMSTNode.vertex;
+                    mstNode.weightSumTo = nearestMSTNode.weightSumTo + weight;
+                    minimumSpanningTree.put(neighbour, mstNode);
+
+                    path.visited.add(neighbour);
+                } else {
+                    // If the neighbour is in the minimum spanning tree update it.
+                    MSTNode mstNode = minimumSpanningTree.get(neighbour);
+                    if (mstNode.weightSumTo > nearestMSTNode.weightSumTo + weight) {
+                        mstNode.parentVertex = nearestMSTNode.vertex;
+                        mstNode.weightSumTo = nearestMSTNode.weightSumTo + weight;
+                    }
+                }
+            }
 
             // Find the next nearest node.
             nearestMSTNode = findNearestMSTNode(minimumSpanningTree);
@@ -354,9 +378,10 @@ public abstract class AbstractGraph<V> {
 
     /**
      * Builds the path from the minimum spanning tree.
-     * @param path                 the path to build.
-     * @param minimumSpanningTree  the minimum spanning tree to build the path from.
-     * @param nearestMSTNode       the nearest node to start building the path from.
+     *
+     * @param path                the path to build.
+     * @param minimumSpanningTree the minimum spanning tree to build the path from.
+     * @param nearestMSTNode      the nearest node to start building the path from.
      */
     private void buildPath(GPath path, Map<V, MSTNode> minimumSpanningTree, MSTNode nearestMSTNode) {
         // Loop over all nodes in the minimum spanning tree.
@@ -378,30 +403,7 @@ public abstract class AbstractGraph<V> {
         path.visited.addAll(path.vertices);
     }
 
-    /**
-     * Updates the minimum spanning tree with the nearest node.
-     * @param nearestMSTNode       the nearest node to update the minimum spanning tree with.
-     * @param minimumSpanningTree  the minimum spanning tree to update.
-     * @param weightMapper         the weight mapper to use to calculate the weight between two vertices.
-     */
-    private void updateMST(MSTNode nearestMSTNode, Map<V, MSTNode> minimumSpanningTree, BiFunction<V, V, Double> weightMapper) {
-        // Loop over all neighbours of the nearest node.
-        for (V neighbour : getNeighbours(nearestMSTNode.vertex)) {
-            // If the neighbour is already in the minimum spanning tree, skip it.
-            if (minimumSpanningTree.containsKey(neighbour)) continue;
 
-            // Calculate the weight between the nearest node and the neighbour and create a new MSTNode.
-            double weight = weightMapper.apply(nearestMSTNode.vertex, neighbour);
-            MSTNode neighbourMSTNode = new MSTNode(neighbour);
-
-            // Update the neighbour MSTNode.
-            neighbourMSTNode.parentVertex = nearestMSTNode.vertex;
-            neighbourMSTNode.weightSumTo = nearestMSTNode.weightSumTo + weight;
-
-            // Add the neighbour to the minimum spanning tree.
-            minimumSpanningTree.put(neighbour, neighbourMSTNode);
-        }
-    }
 
     /**
      * Finds the nearest node in the minimum spanning tree that is not marked.
