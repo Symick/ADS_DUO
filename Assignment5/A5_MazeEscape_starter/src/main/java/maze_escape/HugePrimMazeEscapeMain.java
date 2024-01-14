@@ -20,9 +20,9 @@ public class HugePrimMazeEscapeMain {
         maze.removeRandomWalls(REMOVE);
         System.out.printf("\nCreated %dx%d Randomized-Prim-Maze(%d) with %d walls removed\n", WIDTH, HEIGHT, SEED, REMOVE);
 
+        doPathSearches(maze, "Depth First Search", maze::depthFirstSearch);
         doPathSearches(maze, "Breadth First Search", maze::breadthFirstSearch);
         doPathSearches(maze, "Dijkstra Shortest Path", (v1,v2)-> maze.dijkstraShortestPath(v1,v2,maze::manhattanTime));
-        //doPathSearches(maze, "Depth First Search", maze::depthFirstSearch);
     }
 
     private static void doPathSearches(Maze maze, String title, BiFunction<Integer,Integer,Maze.GPath> searcher) {
